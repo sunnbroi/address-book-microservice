@@ -9,33 +9,3 @@
 /.github export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore
-# Обрабатываем все текстовые файлы как текст
-* text=auto
-
-# Принудительно LF для файлов кода
-*.php      text eol=lf
-*.js       text eol=lf
-*.ts       text eol=lf
-*.vue      text eol=lf
-*.css      text eol=lf
-*.scss     text eol=lf
-*.html     text eol=lf
-*.json     text eol=lf
-*.md       text eol=lf
-*.yml      text eol=lf
-*.yaml     text eol=lf
-*.xml      text eol=lf
-*.sh       text eol=lf
-
-# Бинарные файлы не трогаем
-*.png      binary
-*.jpg      binary
-*.jpeg     binary
-*.gif      binary
-*.ico      binary
-*.pdf      binary
-*.woff     binary
-*.woff2    binary
-*.ttf      binary
-*.eot      binary
-*.zip      binary
