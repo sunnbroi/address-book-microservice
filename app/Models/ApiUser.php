@@ -11,13 +11,10 @@ class ApiUser extends Authenticatable
 {
     use HasApiTokens;
 
-    protected $fillable = [ 'name' ];
-
     public function client(): HasOne
 {
     return $this->hasOne(Client::class);
 }
 
 }
-
 
