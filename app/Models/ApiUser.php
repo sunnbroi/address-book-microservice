@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class ApiUser extends Authenticatable
 {
     use HasApiTokens;
+    protected $fillable = [
+        'id',];
 
     public function client(): HasOne
 {
