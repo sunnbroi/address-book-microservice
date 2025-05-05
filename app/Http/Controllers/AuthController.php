@@ -20,8 +20,7 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse|MixedType
     {
         $data = $request->validated(); //проверка наличия client key и secret key в запросе
-
-       
+        
         $client = $this->authService->authenticateClient(
             $data['client_key'],
             $data['secret_key']
