@@ -40,8 +40,8 @@ class Recipient extends Model
     /**
      * Получатель принадлежит адресной книге.
      */
-    public function addressBook(): BelongsToMany
+    public function addressBooks(): BelongsToMany
     {
-        return $this->belongsToMany(AddressBook::class);
+        return $this->belongsToMany(AddressBook::class, 'address_books_recipients');
     }
 }

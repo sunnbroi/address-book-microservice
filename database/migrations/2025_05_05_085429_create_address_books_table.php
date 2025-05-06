@@ -20,11 +20,11 @@ return new class extends Migration
         });
     }
 
-    /**
+    /**дав
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('address_books');
+       // Schema::dropIfExists('address_books');
     }
 };

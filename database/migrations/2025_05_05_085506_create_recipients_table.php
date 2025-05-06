@@ -14,10 +14,10 @@ return new class extends Migration
        Schema::create('recipients', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('telegram_user_id');
-            $table->string('username');
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->string('type');
+            $table->string('username')->nullable();
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
+            $table->string('type')->nullable();
             $table->timestamp('blocked_at')->nullable();
             $table->timestamps();
     });
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('recipients');
+       Schema::dropIfExists('recipients');
     }
 };

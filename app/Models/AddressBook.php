@@ -30,7 +30,7 @@ class AddressBook extends Model
 
     public function recipients(): BelongsToMany
     {
-        return $this->belongsToMany(Recipient::class);
+        return $this->belongsToMany(Recipient::class, 'address_books_recipients');
     }
 
 }

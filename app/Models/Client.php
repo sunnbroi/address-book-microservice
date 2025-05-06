@@ -35,6 +35,3 @@ class Client extends Model
         return $this->belongsTo(ApiUser::class);
     }
 }
- $article = Client::create(['title' => 'My first article']);
-
- echo $article->id;
