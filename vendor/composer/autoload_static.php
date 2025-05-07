@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit88970a0117c062eed55fa8728fc43833
+class ComposerStaticInit200eb9b5a4912162c3edc62ee151d7a0
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -337,8 +337,8 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-factory/src',
-            1 => __DIR__ . '/..' . '/psr/http-message/src',
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            1 => __DIR__ . '/..' . '/psr/http-factory/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -378,8 +378,8 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
         ),
         'League\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/uri',
-            1 => __DIR__ . '/..' . '/league/uri-interfaces',
+            0 => __DIR__ . '/..' . '/league/uri-interfaces',
+            1 => __DIR__ . '/..' . '/league/uri',
         ),
         'League\\MimeTypeDetection\\' => 
         array (
@@ -521,10 +521,18 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
     );
 
     public static $classMap = array (
+        'App\\Http\\Controllers\\AddressBookController' => __DIR__ . '/../..' . '/app/Http/Controllers/AddressBookController.php',
         'App\\Http\\Controllers\\AuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/AuthController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
+        'App\\Http\\Controllers\\RecipientController' => __DIR__ . '/../..' . '/app/Http/Controllers/RecipientController.php',
         'App\\Http\\Middleware\\VerifyHmacSignature' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyHmacSignature.php',
+        'App\\Http\\Requests\\AddressBook\\ADSAddressBookRequest' => __DIR__ . '/../..' . '/app/Http/Requests/AddressBook/ADSAddressBookRequest.php',
+        'App\\Http\\Requests\\AddressBook\\StoreAddressBookRequest' => __DIR__ . '/../..' . '/app/Http/Requests/AddressBook/StoreAddressBookRequest.php',
+        'App\\Http\\Requests\\AddressBook\\UpdateAddressBookRequest' => __DIR__ . '/../..' . '/app/Http/Requests/AddressBook/UpdateAddressBookRequest.php',
         'App\\Http\\Requests\\LoginRequest' => __DIR__ . '/../..' . '/app/Http/Requests/LoginRequest.php',
+        'App\\Http\\Requests\\Recipient\\ADSRecipientRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Recipient/ADSRecipientRequest.php',
+        'App\\Http\\Requests\\Recipient\\StoreRecipientRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Recipient/StoreRecipientRequest.php',
+        'App\\Http\\Requests\\Recipient\\UpdateRecipientRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Recipient/UpdateRecipientRequest.php',
         'App\\Models\\AddressBook' => __DIR__ . '/../..' . '/app/Models/AddressBook.php',
         'App\\Models\\ApiUser' => __DIR__ . '/../..' . '/app/Models/ApiUser.php',
         'App\\Models\\Client' => __DIR__ . '/../..' . '/app/Models/Client.php',
@@ -6649,9 +6657,9 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit88970a0117c062eed55fa8728fc43833::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit88970a0117c062eed55fa8728fc43833::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit88970a0117c062eed55fa8728fc43833::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit200eb9b5a4912162c3edc62ee151d7a0::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit200eb9b5a4912162c3edc62ee151d7a0::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit200eb9b5a4912162c3edc62ee151d7a0::$classMap;
 
         }, null, ClassLoader::class);
     }

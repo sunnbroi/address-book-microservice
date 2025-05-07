@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Recipient\DestroyRecipientRequest;
 use App\HTTP\Requests\Recipient\StoreRecipientRequest;
 use App\HTTP\Requests\Recipient\UpdateRecipientRequest;
 use App\HTTP\Requests\Recipient\ADSRecipientRequest;
+use App\HTTP\Requests\Recipient\BulkStoreRecipientRequest;
 use App\Models\Recipient;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
@@ -21,35 +23,60 @@ class RecipientController extends Controller
     {
         return Recipient::all();
     }
-    public function store(StoreRecipientRequest $request): Recipient// create
+    public function store(StoreRecipientRequest $request): Recipient // create
     {
-        return Recipient::create(array_merge($request->validated(), [
+        $validated = $request->validated();
+
+        return Recipient::create(array_merge($validated, [
             'id' => Str::uuid()
         ]));
     }
+
+    public function bulkStore(BulkStoreRecipientRequest $request): JsonResponse // массовое создание получателей
+    {
+        $validated = $request->validated();
+
+        $recipients = collect($validated['recipients'])->map(function ($recipient) {
+            return array_merge($recipient, [
+                'id' => (string) Str::uuid()
+            ]);
+        });
+
+        Recipient::insert($recipients->toArray());
+
+        return response()->json([
+            'message' => 'Recipients created',
+        ], 201);
+    }
+
     public function show(string $id): Recipient   // read
     {
        return $this->findRecipientOrFail($id);
     }
     public function update(UpdateRecipientRequest $request, string $id): Recipient // update
     {
+
+        $validated = $request->validated();
         $recipient = $this->findRecipientOrFail($id);
 
-        $recipient->update($request->validated());
+        $recipient->update($validated);
 
         return $recipient;
     }
 
-    public function destroy(string $id): JsonResponse// delete
+    public function destroy(DestroyRecipientRequest $request): JsonResponse// delete
     {
-        $this->findRecipientOrFail($id)->delete();
+        $validated = $request->validated();
 
-        return response()->json(['message' => 'Deleted']);
+        Recipient::whereIn('id', $validated['recipient_ids'])->delete();
+
+        return response()->json(['message' => 'Recipients deleted']);
     }
 
     public function attach(ADSRecipientRequest $request, Recipient $recipient): JsonResponse // привязка адресных книг к получателю
     {
-        $addressBookIds = $request->input('address_book_ids');
+        $validated = $request->validated();
+        $addressBookIds = $validated['address_book_ids'];
 
         $recipient->addressBooks()->syncWithoutDetaching($addressBookIds);
 
@@ -58,7 +85,8 @@ class RecipientController extends Controller
 
     public function detach(ADSRecipientRequest $request, Recipient $recipient): JsonResponse // отвязка адресных книг от получателя
     {
-        $addressBookIds = $request->input('address_book_ids');
+        $validated = $request->validated();
+        $addressBookIds = $validated['address_book_ids'];
 
         $recipient->addressBooks()->detach($addressBookIds);
 
@@ -67,7 +95,8 @@ class RecipientController extends Controller
 
     public function sync(ADSRecipientRequest $request, Recipient $recipient): JsonResponse // синхронизация адресных книг с получателем
     {
-        $addressBookIds = $request->input('address_book_ids');
+        $validated = $request->validated();
+        $addressBookIds = $validated['address_book_ids'];
 
         $recipient->addressBooks()->sync($addressBookIds);
 

@@ -1,26 +1,23 @@
-Адресные книги (AdressBooks)
-
 CRUD операция	HTTP метод	    URI	                    Метод контроллера
+
+Адресные книги (AdressBooks)
 Список	        GET	            /address-books	        index()
 Получить одну	GET	            /address-books/{id}	    show()
 Создать	        POST	        /address-books	        store()
 Обновить	    PUT/PATCH	    /address-books/{id}	    update()
 Удалить	        DELETE	        /address-books/{id}	    destroy()
+Привязать получателей к адресной книге	                POST	    /address-books/{addressBook}/attach	    AddressBookController::attach()
+Отвязать получателей от адресной книги	                POST	    /address-books/{addressBook}/detach	    AddressBookController::detach()
+Синхронизировать получателей с адресной книгой          POST	    /address-books/{addressBook}/sync	    AddressBookController::sync()
+Массовое создание адресных книг	                        POST	    /address-books/bulk-store	            AddressBookController::bulkStore()
 
 Клиенты (Recipients)
-
-CRUD операция	    HTTP метод	    URI	                Метод контроллера
 Список	            GET	            /recipients	        index()
 Получить одного	    GET	            /recipients/{id}	show()
 Создать	            POST	        /recipients	        store()
 Обновить            PUT/PATCH       /recipients/{id}	update()
 Удалить	            DELETE	        /recipients/{id}	destroy()
-
-Операция	                                            HTTP метод	URI	                                    Метод контроллера
-
-Привязать получателей к адресной книге	                POST	    /address-books/{addressBook}/attach	    AddressBookController::attach()
-Отвязать получателей от адресной книги	                POST	    /address-books/{addressBook}/detach	    AddressBookController::detach()
-Синхронизировать получателей с адресной книгой          POST	    /address-books/{addressBook}/sync	    AddressBookController::sync()
 Привязать адресные книги к получателю	                POST	    /recipients/{recipient}/attach	        RecipientController::attach()
 Отвязать адресные книги от получателя	                POST	    /recipients/{recipient}/detach	        RecipientController::detach()
 Синхронизировать адресные книги у получателя            POST	    /recipients/{recipient}/sync	        RecipientController::sync()
+Массовое создание получателей	                        POST	    /recipients/bulk-store	                RecipientController::bulkStore()

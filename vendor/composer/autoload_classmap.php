@@ -6,10 +6,18 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Http\\Controllers\\AddressBookController' => $baseDir . '/app/Http/Controllers/AddressBookController.php',
     'App\\Http\\Controllers\\AuthController' => $baseDir . '/app/Http/Controllers/AuthController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
+    'App\\Http\\Controllers\\RecipientController' => $baseDir . '/app/Http/Controllers/RecipientController.php',
     'App\\Http\\Middleware\\VerifyHmacSignature' => $baseDir . '/app/Http/Middleware/VerifyHmacSignature.php',
+    'App\\Http\\Requests\\AddressBook\\ADSAddressBookRequest' => $baseDir . '/app/Http/Requests/AddressBook/ADSAddressBookRequest.php',
+    'App\\Http\\Requests\\AddressBook\\StoreAddressBookRequest' => $baseDir . '/app/Http/Requests/AddressBook/StoreAddressBookRequest.php',
+    'App\\Http\\Requests\\AddressBook\\UpdateAddressBookRequest' => $baseDir . '/app/Http/Requests/AddressBook/UpdateAddressBookRequest.php',
     'App\\Http\\Requests\\LoginRequest' => $baseDir . '/app/Http/Requests/LoginRequest.php',
+    'App\\Http\\Requests\\Recipient\\ADSRecipientRequest' => $baseDir . '/app/Http/Requests/Recipient/ADSRecipientRequest.php',
+    'App\\Http\\Requests\\Recipient\\StoreRecipientRequest' => $baseDir . '/app/Http/Requests/Recipient/StoreRecipientRequest.php',
+    'App\\Http\\Requests\\Recipient\\UpdateRecipientRequest' => $baseDir . '/app/Http/Requests/Recipient/UpdateRecipientRequest.php',
     'App\\Models\\AddressBook' => $baseDir . '/app/Models/AddressBook.php',
     'App\\Models\\ApiUser' => $baseDir . '/app/Models/ApiUser.php',
     'App\\Models\\Client' => $baseDir . '/app/Models/Client.php',
