@@ -337,8 +337,8 @@ class ComposerStaticInit200eb9b5a4912162c3edc62ee151d7a0
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -378,8 +378,8 @@ class ComposerStaticInit200eb9b5a4912162c3edc62ee151d7a0
         ),
         'League\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/uri-interfaces',
-            1 => __DIR__ . '/..' . '/league/uri',
+            0 => __DIR__ . '/..' . '/league/uri',
+            1 => __DIR__ . '/..' . '/league/uri-interfaces',
         ),
         'League\\MimeTypeDetection\\' => 
         array (
@@ -525,12 +525,17 @@ class ComposerStaticInit200eb9b5a4912162c3edc62ee151d7a0
         'App\\Http\\Controllers\\AuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/AuthController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\RecipientController' => __DIR__ . '/../..' . '/app/Http/Controllers/RecipientController.php',
+        'App\\Http\\Controllers\\TelegramTestController' => __DIR__ . '/../..' . '/app/Http/Controllers/TelegramTestController.php',
         'App\\Http\\Middleware\\VerifyHmacSignature' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyHmacSignature.php',
         'App\\Http\\Requests\\AddressBook\\ADSAddressBookRequest' => __DIR__ . '/../..' . '/app/Http/Requests/AddressBook/ADSAddressBookRequest.php',
+        'App\\Http\\Requests\\AddressBook\\BulkStoreAddressBookRequest' => __DIR__ . '/../..' . '/app/Http/Requests/AddressBook/BulkStoreAddressBookRequest.php',
+        'App\\Http\\Requests\\AddressBook\\DestroyAddressBookRequest' => __DIR__ . '/../..' . '/app/Http/Requests/AddressBook/DestroyAddressBookRequest.php',
         'App\\Http\\Requests\\AddressBook\\StoreAddressBookRequest' => __DIR__ . '/../..' . '/app/Http/Requests/AddressBook/StoreAddressBookRequest.php',
         'App\\Http\\Requests\\AddressBook\\UpdateAddressBookRequest' => __DIR__ . '/../..' . '/app/Http/Requests/AddressBook/UpdateAddressBookRequest.php',
         'App\\Http\\Requests\\LoginRequest' => __DIR__ . '/../..' . '/app/Http/Requests/LoginRequest.php',
         'App\\Http\\Requests\\Recipient\\ADSRecipientRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Recipient/ADSRecipientRequest.php',
+        'App\\Http\\Requests\\Recipient\\BulkStoreRecipientRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Recipient/BulkStoreRecipientRequest.php',
+        'App\\Http\\Requests\\Recipient\\DestroyRecipientRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Recipient/DestroyRecipientRequest.php',
         'App\\Http\\Requests\\Recipient\\StoreRecipientRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Recipient/StoreRecipientRequest.php',
         'App\\Http\\Requests\\Recipient\\UpdateRecipientRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Recipient/UpdateRecipientRequest.php',
         'App\\Models\\AddressBook' => __DIR__ . '/../..' . '/app/Models/AddressBook.php',
@@ -540,6 +545,7 @@ class ComposerStaticInit200eb9b5a4912162c3edc62ee151d7a0
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',
         'App\\Providers\\RouteServiceProvider' => __DIR__ . '/../..' . '/app/Providers/RouteServiceProvider.php',
         'App\\Services\\AuthService' => __DIR__ . '/../..' . '/app/Services/AuthService.php',
+        'App\\Services\\TelegramService' => __DIR__ . '/../..' . '/app/Services/TelegramService.php',
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'Brick\\Math\\BigDecimal' => __DIR__ . '/..' . '/brick/math/src/BigDecimal.php',
         'Brick\\Math\\BigInteger' => __DIR__ . '/..' . '/brick/math/src/BigInteger.php',
