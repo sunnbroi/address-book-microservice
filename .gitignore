@@ -5,7 +5,14 @@
 /public/storage
 /storage/*.key
 /storage/pail
-#/vendor
+
+
+/vendor
+/bootstrap
+/config
+/resourses
+/storage
+
 /.vscode
 .env
 .env.backup
