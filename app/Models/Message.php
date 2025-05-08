@@ -8,4 +8,28 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Message extends Model
 {
     use HasFactory;
+
+    public $incrementing = false; // UUID
+    protected $keyType = 'string';
+
+    protected $fillable = [
+        'id',
+        'address_book_id',
+        'text',
+        'sent_at',
+    ];
+
+    public function addressBook()
+    {
+        return $this->belongsTo(AddressBook::class);
+    }
+    public function deliveryLogs()
+    {
+        return $this->hasMany(DeliveryLog::class);
+    }
+    public function prunable()
+{
+    return static::where('sent_at', '<', now()->subMonths(6));
+}
+
 }

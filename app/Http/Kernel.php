@@ -3,6 +3,8 @@
 namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Illuminate\Console\Scheduling\Schedule;
+
 
 class Kernel extends HttpKernel
 {
@@ -67,4 +69,9 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'verify.hmac' => \App\Http\Middleware\VerifyHmacSignature::class,
     ];
+
+        protected function schedule(Schedule $schedule)
+    {
+        $schedule->command('model:prune')->daily();
+    }
 }

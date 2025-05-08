@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('address_book_id')->constrained()->onDelete('cascade');
+            $table->foreignUuid('address_book_id')->references('id')->on('address_books')->onDelete('cascade');
             $table->text('text');
             $table->timestamp('sent_at')->nullable();
             $table->timestamps();
