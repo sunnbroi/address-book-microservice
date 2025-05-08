@@ -6,6 +6,7 @@ use App\Http\Controllers\RecipientController;
 use App\Http\Controllers\TelegramAddressBookController;
 use App\Services\TelegramService;
 
+Route::middleware(['auth:sanctum', 'verify.hmac'])->group(function (){
 Route::post('/login', [AuthController::class, 'login']); //запрос от клиента на проверку аутифекации через sanctum
 
 Route::apiResource('address-books', AddressBookController::class);// crud address books
@@ -23,3 +24,4 @@ Route::post('recipients/bulk-store', [RecipientController::class, 'bulkStore']);
 
 Route::post('/telegram/send-personal-message', [TelegramService::class, 'sendMessage']);
 Route::post('/telegram/send-message', [TelegramAddressBookController::class, 'sendMessage']);
+});

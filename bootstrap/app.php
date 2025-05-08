@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Foundation\Configuration\Routing;
 if (php_sapi_name() === 'cli' && isset($_SERVER['argv']) && str_contains(implode(' ', $_SERVER['argv']), 'test')) {
     $_ENV['APP_ENV'] = 'testing'; // <- Laravel 11 uses this
     $_SERVER['APP_ENV'] = 'testing';
@@ -20,7 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'verify.hmac' => \App\Http\Middleware\VerifyHmacSignature::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
