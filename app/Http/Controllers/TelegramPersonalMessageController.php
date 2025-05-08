@@ -5,7 +5,7 @@ use App\Services\TelegramService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class TelegramTestController extends Controller
+class TelegramPersonalMessageController extends Controller
 {
     protected TelegramService $telegram;
 
@@ -13,7 +13,7 @@ class TelegramTestController extends Controller
     {
         $this->telegram = $telegram;
     }
-    public function sendTelegramMessage(Request $request): JsonResponse
+    public function sendMessage(Request $request): JsonResponse
     {
         $chatId = $request->input('chat_id');
         $text = $request->input('text');

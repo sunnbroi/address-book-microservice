@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use App\Models\AddressBook;
 
 class TelegramService
 {
@@ -34,6 +35,57 @@ class TelegramService
             'text' => $text,
         ]);
     }
+
+    public function sendMessageToAddressBook(string $addressBookId, string $text): array
+    {
+        $addressBook = AddressBook::with('recipients')->findOrFail($addressBookId);
+
+        $results = [];
+
+        foreach ($addressBook->recipients as $recipient) {
+            $chatId = $recipient->telegram_user_id;
+            $result = $this->sendMessage($chatId, $text);
+
+            $results[] = [
+                'recipient_id' => $recipient->id,
+                'chat_id' => $chatId,
+                'status' => $result['ok'] ?? false,
+                'response' => $result,
+            ];
+        }
+
+        return $results;
+    }
+    public function sendMedia(string $type, string $chatId, $media, ?string $caption = null): array
+    {
+        $method = $type === 'photo' ? 'sendPhoto' : 'sendDocument';
+    
+        if (is_string($media)) {
+            $response = Http::post($this->apiUrl . $method, [
+                'chat_id' => $chatId,
+                $type => $media,
+                'caption' => $caption ?? '',
+            ]);
+        } else {
+            $response = Http::asMultipart()
+                ->attach(
+                    $type,
+                    fopen($media->getRealPath(), 'r'),
+                    $media->getClientOriginalName()
+                )
+                ->post($this->apiUrl . $method, [
+                    ['name' => 'chat_id', 'contents' => $chatId],
+                    ['name' => 'caption', 'contents' => $caption ?? ''],
+                ]);
+        }
+    
+        if ($response->failed()) {
+            throw new \Exception('Telegram API request failed: ' . $response->body());
+        }
+    
+        return $response->json();
+    }
+
 
     public function sendPhoto(string $chatId, $photo, string $caption = null): array
     {
@@ -94,4 +146,36 @@ public function sendDocument(string $chatId, $document, string $caption = null):
 
         return $response->json();
 }
+
+public function sendByType(string $addressBookId, string $type, ?string $message, ?string $file): array
+    {
+        $addressBook = AddressBook::with('recipients')->findOrFail($addressBookId);
+
+        $results = [];
+
+        foreach ($addressBook->recipients as $recipient) {
+            $chatId = $recipient->telegram_user_id;
+
+            if ($type === 'message') {
+                $result = $this->sendMessage($chatId, $message);
+            } elseif ($type === 'photo') {
+                $result = $this->sendPhoto($chatId, $file, $message); // передаём message как caption
+            } elseif ($type === 'document') {
+                $result = $this->sendDocument($chatId, $file, $message); // передаём message как caption
+            } else {
+                continue; // skip unknown type
+            }
+
+            $results[] = [
+                'recipient_id' => $recipient->id,
+                'chat_id' => $chatId,
+                'status' => $result['ok'] ?? false,
+                'response' => $result,
+            ];
+        }
+
+        return $results;
+    }
+
+    
 }

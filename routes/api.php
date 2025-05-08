@@ -3,7 +3,8 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AddressBookController;
 use App\Http\Controllers\RecipientController;
-use App\Http\Controllers\TelegramTestController;
+use App\Http\Controllers\TelegramAddressBookController;
+use App\Services\TelegramService;
 
 Route::post('/login', [AuthController::class, 'login']); //запрос от клиента на проверку аутифекации через sanctum
 
@@ -20,4 +21,5 @@ Route::post('recipients/{recipient}/detach', [RecipientController::class, 'detac
 Route::post('recipients/{recipient}/sync', [RecipientController::class, 'sync']);
 Route::post('recipients/bulk-store', [RecipientController::class, 'bulkStore']);
 
-Route::post('/telegram/send-message', [TelegramTestController::class, 'sendTelegramMessage']);
+Route::post('/telegram/send-personal-message', [TelegramService::class, 'sendMessage']);
+Route::post('/telegram/send-message', [TelegramAddressBookController::class, 'sendMessage']);
