@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('delivery_logs', function (Blueprint $table) {
             $table->id();
             $table->foreignUuid('message_id')->references('id')->on('messages')->onDelete('cascade');
-            $table->foreignUuid('recipient_id')->references('id')->on('recipients')->onDelete('cascade');
-            $table->enum('status', ['success', 'failed', 'pending'])->default('pending');
+            $table->foreignUuid('recipient_id')->references('id')->on('recipients')->onDelete('cascade')->nullable();
+            $table->enum('status', ['success', 'failed', 'pending'])->default('pending')->nullable();
             $table->text('error')->nullable();
             $table->integer('attempts')->default(0);
             $table->timestamps();
