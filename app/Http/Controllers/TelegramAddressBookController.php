@@ -6,6 +6,10 @@ use App\Models\AddressBook;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\AddressBook\MessageAddressBookRequest;
 use Illuminate\Http\Request;
+use App\Jobs\SendTelegramToAddressBookJob;
+use App\Jobs\SendSingleTelegramMessageJob;
+use App\Models\Message;
+use Illuminate\Support\Str;
 
 class TelegramAddressBookController extends Controller
 {
@@ -18,13 +22,21 @@ class TelegramAddressBookController extends Controller
     {
         $validated = $request->validated();
     
-        $results = $this->messageService->sendByType(
-            $validated['address_book_id'],
-            $validated['type'],
-            $validated['message'] ?? null,
-            $validated['file'] ?? null
-        );
+        $message = Message::create([
+            'id' => Str::uuid(),
+            'address_book_id' => $validated['address_book_id'] ?? null,
+            'recipient_id' => $validated['chat_id'] ?? null,
+            'type' => $validated['type'],
+            'text' => $validated['message'] ?? null,
+            'file' => $validated['file'] ?? null,
+        ]);
     
-        return response()->json(['results' => $results]);
+        if ($message->recipient_id) {
+            SendSingleTelegramMessageJob::dispatch($message->id, $message->recipient_id);
+        } elseif ($message->address_book_id) {
+            SendTelegramToAddressBookJob::dispatch($message->id);
+        }
+        return response()->json(['status' => 'job dispatched']);
+        }
+
     }
-}

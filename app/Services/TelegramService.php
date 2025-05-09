@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use App\Models\AddressBook;
+use Illuminate\Support\Facades\Log;
 
 class TelegramService
 {
@@ -17,7 +18,58 @@ class TelegramService
     }
 
 
-    protected function sendRequest(string $method, array $params = []): array
+    public function sendMessage(string $chatId, string $text): array
+    {
+        try {
+            $response = Http::post("{$this->apiUrl}/sendMessage", [
+                'chat_id' => $chatId,
+                'text' => $text,
+            ]);
+
+            $data = $response->json();
+
+            if (!$response->successful()) {
+                Log::error('Telegram sendMessage failed', ['response' => $data]);
+            }
+
+            return $data;
+        } catch (\Exception $e) {
+            Log::error('Telegram sendMessage exception', ['error' => $e->getMessage()]);
+            throw $e;
+        }
+    }
+
+    public function sendMedia(string $type, string $chatId, string $file, ?string $caption = null): array
+    {
+        $endpoint = $type === 'photo' ? 'sendPhoto' : 'sendDocument';
+
+        try {
+            $response = Http::attach(
+                $type, // поле multipart (например, photo или document)
+                fopen($file, 'r'),
+                basename($file)
+            )->post("{$this->apiUrl}/{$endpoint}", [
+                'chat_id' => $chatId,
+                'caption' => $caption,
+            ]);
+
+            $data = $response->json();
+
+            if (!$response->successful()) {
+                Log::error("Telegram {$endpoint} failed", ['response' => $data]);
+            }
+
+            return $data;
+        } catch (\Exception $e) {
+            Log::error("Telegram {$endpoint} exception", ['error' => $e->getMessage()]);
+            throw $e;
+        }
+    }
+}
+
+
+
+    /*protected function sendRequest(string $method, array $params = []): array
     {
         $response = Http::post($this->apiUrl . $method, $params);
 
@@ -34,7 +86,7 @@ class TelegramService
             'chat_id' => $chatId,
             'text' => $text,
         ]);
-    }
+    } 
 
     public function sendMessageToAddressBook(string $addressBookId, string $text): array
     {
@@ -176,6 +228,4 @@ public function sendByType(string $addressBookId, string $type, ?string $message
 
         return $results;
     }
-
-    
-}
+*/

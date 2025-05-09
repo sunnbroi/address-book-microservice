@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('messages', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('address_book_id')->references('id')->on('address_books')->onDelete('cascade');
+            $table->foreignUuid('recipient_id')->references('id')->on('recipients')->onDelete('cascade')->nullable();
+            $table->enum('type', ['message', 'photo', 'document']);
             $table->text('text');
+            $table->string('file')->nullable();
             $table->timestamp('sent_at')->nullable();
             $table->timestamps();
         });

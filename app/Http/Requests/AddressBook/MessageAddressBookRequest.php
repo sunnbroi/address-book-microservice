@@ -22,7 +22,8 @@ class MessageAddressBookRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'address_book_id' => 'required|uuid|exists:address_books,id',
+            'address_book_id' => 'nullable|uuid|exists:address_books,id',
+            'chat_id' => 'nullable|uuid|exists:recipients,id',
             'type' => 'required|string|in:message,photo,document',
             'message' => 'nullable|string', // больше не required_if
             'file' => 'required_if:type,photo,document', // обязательно только для фото/документов

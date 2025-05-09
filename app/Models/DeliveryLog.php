@@ -28,6 +28,10 @@ class DeliveryLog extends Model
     {
         return $this->belongsTo(Recipient::class);
     }
+    public function addressBook()
+    {
+        return $this->belongsTo(AddressBook::class);
+    }
 
     public function prunable()
     {
