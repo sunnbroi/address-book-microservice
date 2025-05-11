@@ -13,9 +13,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
+use App\Services\RecipientService;
 
 class RecipientController extends Controller
 {
+    public function __construct(RecipientService $recipientService) {}
     protected function findRecipientOrFail(string $id): Recipient
 {
     return Recipient::findOrFail($id);
@@ -24,13 +26,33 @@ class RecipientController extends Controller
     {
         return Recipient::all();
     }
-    public function store(StoreRecipientRequest $request): Recipient // create
+    public function store(StoreRecipientRequest $request, string $id): Recipient // create
     {
+        $clientKey = $request->header('X-Client-Key');
         $validated = $request->validated();
+        $addressBook = AddressBook::where('i', $id)
+        ->where('client_key', $clientKey)->first();
+        if (!$addressBook) {
+            return response()->json(['message' => 'Address book not found'], 404);
+        }
+        $data = [
+            'id' => (string) Str::uuid(),
+            'telegram_user_id' => $validated['telegram_user_id'],
+            'address_book_id' => $addressBook->id,
+        ];
 
-        return Recipient::create(array_merge($validated, [
-            'id' => Str::uuid()
-        ]));
+        if ($validated->has['username']) {
+            $data['username'] = $validated['username'];
+        } elseif($validated->has['first_name']) {
+            $data['first_name'] = $validated['first_name'];
+        } elseif($validated->has['last_name']) {
+            $data['last_name'] = $validated['last_name'];
+        } elseif($validated->has['type']) {
+            $data['type'] = $validated['type'];
+        }
+        
+        $recipient = Recipient::create($data);
+        return response()->json($recipient, 201);
     }
 
     public function bulkStore(BulkStoreRecipientRequest $request): JsonResponse // массовое создание получателей
