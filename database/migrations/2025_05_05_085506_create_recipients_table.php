@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('type')->nullable();
             $table->timestamp('blocked_at')->nullable();
             $table->timestamps();
+            $table->softDeletes();
+
     });
     }
     /**

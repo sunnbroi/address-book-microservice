@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('text');
             $table->string('file')->nullable();
             $table->timestamp('sent_at')->nullable();
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
         });
     }
 

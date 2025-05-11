@@ -23,6 +23,9 @@ class StoreRecipientRequest extends FormRequest
     {
         return [
             'telegram_user_id' => ['required', 'string'],
+            'username' => ['nullable', 'string'],
+            'first_name' => ['nullable', 'string'],
+            'last_name' => ['nullable', 'string'],
         ];
     }
 }

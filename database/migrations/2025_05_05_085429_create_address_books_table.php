@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('address_books', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->uuid('invite_key');
             $table->string('client_key');
             $table->foreign('client_key')->references('client_key')->on('clients')->onDelete('cascade');
             $table->string('name');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-       // Schema::dropIfExists('address_books');
+       Schema::dropIfExists('address_books');
     }
 };

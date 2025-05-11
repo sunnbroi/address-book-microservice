@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->unsignedBigInteger('api_user_id')->unique();
+            $table->unsignedBigInteger('api_user_id')->unique()->nullable();
             $table->foreign('api_user_id')->references('id')->on('api_users')->onDelete('cascade');
-            $table->string('host')->nullable();
+            $table->string('name')->nullable();
             $table->string('client_key')->unique();
             $table->string('secret_key');
             $table->timestamps();

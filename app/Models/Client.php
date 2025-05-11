@@ -15,7 +15,7 @@ class Client extends Model
     protected $fillable = [
         'id',
         'api_user_id',
-        'host',
+        'name',
         'client_key',
         'secret_key',
     ];

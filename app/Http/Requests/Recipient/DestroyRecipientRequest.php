@@ -22,6 +22,7 @@ class DestroyRecipientRequest extends FormRequest
     public function rules(): array
     {
         return [
+            
             'recipient_ids' => ['required', 'array', 'min:1'],
             'recipient_ids.*' => ['required', 'uuid', 'exists:recipients,id'],
         ];

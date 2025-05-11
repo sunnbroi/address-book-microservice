@@ -23,11 +23,11 @@ class AddressBookController extends Controller
 
     public function index(Request $request) // вывод всех книг клиента
     {
-        $validatedRequest = $request->validated();
-        if (!isset($validatedRequest['client_key'])) {
+        $a = $request->header('X-Client-Key');
+        if (!isset($a)) {
             return response()->json(['message' => 'Client key is required'], 400);
         }
-        return AddressBook::where('client_key', $validatedRequest['client_key'])->get();
+        return AddressBook::where('client_key', $a)->get();
     }
 
     public function store(StoreAddressBookRequest $request): AddressBook // create
@@ -35,39 +35,40 @@ class AddressBookController extends Controller
         $validatedRequest = $request->validated();
         return AddressBook::create([
             'id' => Str::uuid(),
-            'client_key' => $validatedRequest['client_key'], // из middleware
+            'client_key' => $request->header('X-Client-Key'), // из middleware
             'name' => $validatedRequest['name'],
         ]);
     }
 
     public function show(Request $request, string $id): AddressBook // read
     {
-        $validatedRequest = $request->validated();
-        return $this->findAddressBookOrFail($id, $validatedRequest['client_key']);
+        return $this->findAddressBookOrFail($id, $request->header('X-Client-Key'));
     }
 
     public function update(UpdateAddressBookRequest $request, string $id): AddressBook // update
     {
         $validatedRequest = $request->validated();
-        $book = $this->findAddressBookOrFail($id, $validatedRequest['client_key']);
-
-        $book->update([
-            'name' => $validatedRequest['name'],
-        ]);
+        $client = $request->header('X-Client-Key');
+        $book = $this->findAddressBookOrFail($id, $client);
+        if(array_key_exists('invite_key', $validatedRequest)&& $validatedRequest['invite_key'] == true) {
+            $validatedRequest['invite_key'] = (string) Str::uuid();
+        }
+        $book->update($validatedRequest);
 
         return $book;
     }
 
-    public function destroy(DestroyAddressBookRequest $request, string $id): JsonResponse // delete
+    public function destroy(Request $request, string $id): JsonResponse // delete
     {
-        $validatedRequest = $request->validated();
-        $ids = $validatedRequest['address_book_ids'];
-            if (empty($ids)) {
-                return response()->json(['message' => 'No IDs provided for deletion'], 400);
-            }
-
-        AddressBook::whereIn('id', $ids['address_book_ids'])->delete();
-
+        
+        if (empty($id)) {
+            return response()->json(['message' => 'No IDs provided for deletion'], 400);
+        }
+        
+        $adressBook = AddressBook::where("client_key", $request->header('X-Client-Key'))    
+            ->where("id", $id)
+            ->firstOrFail();
+        $adressBook->delete();
         return response()->json(['message' => 'Address books deleted'], 200);
     }
 
@@ -109,4 +110,4 @@ class AddressBookController extends Controller
 
         return response()->json(['message' => 'Recipients synced']);
     }
-}
+    }

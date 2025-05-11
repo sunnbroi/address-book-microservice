@@ -15,10 +15,9 @@ class ClientsTableSeeder extends Seeder
     {
         
         DB::table('clients')->insert([
-            'id' => 'sacasvcdsfsdssd',
-            'api_user_id' => 1,
+            'id'=> 'W23EWEEWQEFE',
             'host' => 'https://example.com',
-            'client_key' => 'Jasjdkfnhjuasd',
+            'client_key' => 'avenger@gmail.com',
             'secret_key' => 'sdkvfmsknjvmkis',
             'created_at' => now(),
             'updated_at' => now(),

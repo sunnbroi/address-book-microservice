@@ -8,6 +8,7 @@ use App\HTTP\Requests\Recipient\UpdateRecipientRequest;
 use App\HTTP\Requests\Recipient\ADSRecipientRequest;
 use App\HTTP\Requests\Recipient\BulkStoreRecipientRequest;
 use App\Models\Recipient;
+use App\Models\AddressBook;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
@@ -49,9 +50,17 @@ class RecipientController extends Controller
         ], 201);
     }
 
-    public function show(string $id): Recipient   // read
+    public function show(Request $request, string $id): JsonResponse // вывод всех получателей адресной книги
     {
-       return $this->findRecipientOrFail($id);
+        $clientKey = $request->header('X-Client-Key');
+        if(!$id){
+            return response()->json(['message' => 'No IDs provided for deletion'], 400);        
+        }else{
+        $addressBook = AddressBook::where('recipient_id', $id)->where('client_key', $clientKey)->first();
+        }
+        return response()->json([
+            'recipients' => $addressBook->recipients,
+        ]);
     }
     public function update(UpdateRecipientRequest $request, string $id): Recipient // update
     {
@@ -64,11 +73,13 @@ class RecipientController extends Controller
         return $recipient;
     }
 
-    public function destroy(DestroyRecipientRequest $request): JsonResponse// delete
+    public function destroy(Request $request, string $id): JsonResponse// delete
     {
-        $validated = $request->validated();
+        if (empty($id)) {
+            return response()->json(['message' => 'No IDs provided for deletion'], 400);
+        }
 
-        Recipient::whereIn('id', $validated['recipient_ids'])->delete();
+        Recipient::find($id)->delete();
 
         return response()->json(['message' => 'Recipients deleted']);
     }

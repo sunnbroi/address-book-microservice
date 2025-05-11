@@ -1,4 +1,4 @@
-<?php
+ <?php /*
 
 namespace Database\Seeders;
 
@@ -9,7 +9,6 @@ class ApiUsersTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     */
     public function run(): void
     {
         DB::table('api_users')->insert([
@@ -18,4 +17,4 @@ class ApiUsersTableSeeder extends Seeder
             'updated_at' => now(),
         ]);
     }
-}
+} */

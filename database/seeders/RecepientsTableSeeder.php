@@ -14,8 +14,8 @@ class RecepientsTableSeeder extends Seeder
     public function run(): void
     {
         DB::table('recipients')->insert([
-            'id' => '23445525',
-            'telegram_user_id' => 'Afcdsavsv',
+            'id'=> 'ASCXSSDVSDFCD',
+            'telegram_user_id' => 'Rowssdxz',
             'username' => 'tfgegbdxbvf',
             'first_name' => 'wqD',
             'last_name' => 'lASDFFD',

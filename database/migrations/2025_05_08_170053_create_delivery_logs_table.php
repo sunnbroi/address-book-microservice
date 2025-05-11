@@ -19,10 +19,8 @@ return new class extends Migration
             $table->enum('status', ['success', 'failed', 'pending'])->default('pending')->nullable();
             $table->text('error')->nullable();
             $table->integer('attempts')->default(0);
-            $table->timestamp('delivered_at')->nullable();
-            $table->timestamps();
+            $table->timestamp('sent_at')->useCurrent();
             $table->timestamp('delivered_at')->nullable(); // время успешной доставки
-            $table->timestamps();
             $table->index('message_id');
             $table->index('address_book_id');
             $table->index('recipient_id');      
