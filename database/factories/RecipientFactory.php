@@ -17,7 +17,11 @@ class RecipientFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'telegram_user_id' => $this->faker->unique()->uuid(),
+            'username' => $this->faker->userName(),
+            'first_name' => $this->faker->firstName(),
+            'last_name' => $this->faker->lastName(),
+            'type' => $this->faker->randomElement(['user', 'group', 'channel']),
         ];
     }
 }

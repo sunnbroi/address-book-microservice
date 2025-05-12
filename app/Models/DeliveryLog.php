@@ -12,10 +12,11 @@ class DeliveryLog extends Model
 
     protected $fillable = [
         'message_id',
+        'address_book_id',
         'recipient_id',
-        'chat_id',
         'status',
         'error',
+        'status',
         'attempts',
     ];
 

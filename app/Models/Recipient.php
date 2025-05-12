@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Recipient extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasFactory;
     public $incrementing = false;
     protected $keyType = 'string';
 

@@ -17,41 +17,26 @@ use App\Services\RecipientService;
 
 class RecipientController extends Controller
 {
-    public function __construct(RecipientService $recipientService) {}
+    public function __construct(protected RecipientService $recipientService) {}
     protected function findRecipientOrFail(string $id): Recipient
 {
     return Recipient::findOrFail($id);
 }
+/*
     public function index(): Collection// вывод всех получателей
     {
         return Recipient::all();
-    }
+    } 
+*/
     public function store(StoreRecipientRequest $request, string $id): Recipient // create
     {
         $clientKey = $request->header('X-Client-Key');
         $validated = $request->validated();
-        $addressBook = AddressBook::where('i', $id)
-        ->where('client_key', $clientKey)->first();
-        if (!$addressBook) {
-            return response()->json(['message' => 'Address book not found'], 404);
+        $recipient = $this->recipientService
+        ->createRecipient($validated, $id, $clientKey);
+        if (!$recipient) {
+            return response()->json(['message' => 'Recipient not created'], 400);
         }
-        $data = [
-            'id' => (string) Str::uuid(),
-            'telegram_user_id' => $validated['telegram_user_id'],
-            'address_book_id' => $addressBook->id,
-        ];
-
-        if ($validated->has['username']) {
-            $data['username'] = $validated['username'];
-        } elseif($validated->has['first_name']) {
-            $data['first_name'] = $validated['first_name'];
-        } elseif($validated->has['last_name']) {
-            $data['last_name'] = $validated['last_name'];
-        } elseif($validated->has['type']) {
-            $data['type'] = $validated['type'];
-        }
-        
-        $recipient = Recipient::create($data);
         return response()->json($recipient, 201);
     }
 

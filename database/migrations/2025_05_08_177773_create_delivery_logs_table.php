@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('delivery_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignUuid('message_id')->references('id')->on('messages')->onDelete('cascade');
+            $table->foreignUuid('message_id')->nullable()->references('id')->on('messages')->onDelete('cascade');
             $table->foreignUuid('address_book_id')->references('id')->on('address_books')->onDelete('cascade');
             $table->foreignUuid('recipient_id')->references('id')->on('recipients')->onDelete('cascade')->nullable();
             $table->enum('status', ['success', 'failed', 'pending'])->default('pending')->nullable();

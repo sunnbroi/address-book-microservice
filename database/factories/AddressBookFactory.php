@@ -1,7 +1,6 @@
 <?php
 
 namespace Database\Factories;
-
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Client;
 
@@ -19,7 +18,7 @@ class AddressBookFactory extends Factory
     {
         return [
             'invite_key' => $this->faker->regexify('[A-Z0-9]{10}') ,
-            'client_key'=>Client::factory(),
+            'client_key'=>Client::factory()->create()->client_key,
             'name' => $this->faker->company(),
         ];
     }

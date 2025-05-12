@@ -14,10 +14,9 @@ class AddressBooksTableSeeder extends Seeder
     public function run(): void
     {
         DB::table('address_books')->insert([
-            'id'=> 'ACDVSDVFDV',
-            'invite_key' => 'FromSasha',
-            'client_key' => 'avenger@gmail.com',
-            'name' => 'firstAddressBook',
+            'id' => '3425466f',
+            'client_key' => 'Jasjdkfnhjuasd',
+            'name' => 'Test Address Book',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
