@@ -28,7 +28,7 @@ class RecipientController extends Controller
         return Recipient::all();
     } 
 */
-    public function store(StoreRecipientRequest $request, string $id): Recipient // create
+    public function store(StoreRecipientRequest $request, string $id): JsonResponse // create
     {
         $clientKey = $request->header('X-Client-Key');
         $validated = $request->validated();
@@ -63,11 +63,15 @@ class RecipientController extends Controller
         if(!$id){
             return response()->json(['message' => 'No IDs provided for deletion'], 400);        
         }else{
-        $addressBook = AddressBook::where('recipient_id', $id)->where('client_key', $clientKey)->first();
+        $addressBook = AddressBook::where('client_key', $clientKey)
+        ->where('id', $id)->first();
         }
+        if (!$addressBook) {
+            return response()->json(['message' => 'Address book not found'], 404);
+        }else{
         return response()->json([
             'recipients' => $addressBook->recipients,
-        ]);
+        ]);}
     }
     public function update(UpdateRecipientRequest $request, string $id): Recipient // update
     {

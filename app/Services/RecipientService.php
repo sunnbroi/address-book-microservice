@@ -16,23 +16,14 @@ class RecipientService
         $data = [
             'id' => (string) Str::uuid(),
             'telegram_user_id' => $validated['telegram_user_id'],
-            'address_book_id' => $addressBook->id,
         ];
         foreach (['username', 'first_name', 'last_name', 'type'] as $field) {
             if (isset($validated[$field])) {
                 $data[$field] = $validated[$field];
             }
-            return Recipient::create($data);
+            $recipient = Recipient::create($data);
+            $addressBook->recipients()->attach($recipient->id);
+            return $recipient;
         }
-    }
-
-    public function updateRecipient(Recipient $recipient, array $data): Recipient
-    {
-        $recipient->name = $data['name'];
-        $recipient->email = $data['email'];
-        $recipient->phone = $data['phone'];
-        $recipient->save();
-
-        return $recipient;
     }
 }

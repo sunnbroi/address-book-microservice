@@ -17,7 +17,7 @@ Route::middleware([/*'auth:sanctum', */'verify.hmac'])->group(function (){
     Route::post('address-books/bulk-store', [AddressBookController::class, 'bulkStore']);
 
     Route::get('recipients/{addressBook}', [RecipientController::class, 'show']);
-    Route::post('address-book/{addressBook}' , [RecipientController::class, 'showRecipient']);
+    Route::post('recipients/{addressBook}' , [RecipientController::class, 'store']);
     Route::post('recipients/{recipient}/attach', [RecipientController::class, 'attach']);
     Route::post('recipients/{recipient}/detach', [RecipientController::class, 'detach']);
     Route::post('recipients/{recipient}/sync', [RecipientController::class, 'sync']);
