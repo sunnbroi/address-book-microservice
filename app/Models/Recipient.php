@@ -38,27 +38,11 @@ class Recipient extends Model
                 $model->id = (string) Str::uuid();
             }
         });
-        static::deleting(function ($addressBook) {
-        // Сохраним IDs получателей, прежде чем отвязывать
-        $recipientIds = $addressBook->recipients()->pluck('recipients.id')->toArray();
-
-        // Отключаем связи (pivot)
-        $addressBook->recipients()->detach();
-
-        // Проверяем каждый recipient: связан ли он ещё с кем-то
-        foreach ($recipientIds as $recipientId) {
-            $stillAttached = \DB::table('address_books_recipients')
-                ->where('recipient_id', $recipientId)
-                ->exists();
-
-            if (!$stillAttached) {
-                // Если больше нигде не используется → мягко удаляем
-                $recipient = \App\Models\Recipient::find($recipientId);
-                if ($recipient && !$recipient->trashed()) {
-                    $recipient->delete();
-                }
+        static::deleting(function (Recipient $model) {
+            if (!$model->isForceDeleting()) {
+                return;
             }
-        }
+            $model->addressBooks()->detach();
         });
     }
 
@@ -70,9 +54,10 @@ class Recipient extends Model
         return $this->belongsToMany(AddressBook::class, 'address_books_recipients');
     }
 
-    public function prunable():Builder
+    public function prunable(): Builder
     {
-        return static::query()->where('deleted_at', '<=', now()->subDays(30));
+        return static::onlyTrashed()
+            ->whereDoesntHave('addressBooks')
+            ->where('deleted_at', '<=', now()->subDays(30));
     }
-
 }

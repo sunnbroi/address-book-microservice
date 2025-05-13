@@ -28,16 +28,23 @@ class RecipientController extends Controller
         return Recipient::all();
     } 
 */
-    public function store(StoreRecipientRequest $request, string $id): JsonResponse // create
+    public function store(StoreRecipientRequest $request, string $id): JsonResponse // создание получателя в аддресной книге
     {
-        $clientKey = $request->header('X-Client-Key');
-        $validated = $request->validated();
         $recipient = $this->recipientService
-        ->createRecipient($validated, $id, $clientKey);
+        ->createRecipient($request, $id);
         if (!$recipient) {
             return response()->json(['message' => 'Recipient not created'], 400);
         }
         return response()->json($recipient, 201);
+    }
+
+    public function detach(Request $request, string $idAddressBook, string $idRecipient): JsonResponse// отвязка получателя от адресной книги
+    {
+        $detachRecipient = $this->recipientService->detachRecipient(request: $request, idAddressBook: $idAddressBook, idRecipient: $idRecipient);
+        if ($detachRecipient->getStatusCode() !== 200) {
+            return $detachRecipient;
+        }
+        return response()->json(['message' => 'Recipient detached from address book'], 200); 
     }
 
     public function bulkStore(BulkStoreRecipientRequest $request): JsonResponse // массовое создание получателей
@@ -84,28 +91,18 @@ class RecipientController extends Controller
         return $recipient;
     }
 
-    public function destroy(Request $request, string $id): JsonResponse// delete
-    {
-        if (empty($id)) {
-            return response()->json(['message' => 'No IDs provided for deletion'], 400);
-        }
-
-        Recipient::find($id)->delete();
-
-        return response()->json(['message' => 'Recipients deleted']);
-    }
-
     public function attach(ADSRecipientRequest $request, Recipient $recipient): JsonResponse // привязка адресных книг к получателю
     {
         $validated = $request->validated();
         $addressBookIds = $validated['address_book_ids'];
-
         $recipient->addressBooks()->syncWithoutDetaching($addressBookIds);
-
+        if ($recipient->trashed()) {
+            $recipient->restore();
+        }
         return response()->json(['message' => 'Address books attached']);
     }
 
-    public function detach(ADSRecipientRequest $request, Recipient $recipient): JsonResponse // отвязка адресных книг от получателя
+    public function detachRecipient(ADSRecipientRequest $request, Recipient $recipient): JsonResponse // отвязка адресных книг от получателя
     {
         $validated = $request->validated();
         $addressBookIds = $validated['address_book_ids'];

@@ -37,19 +37,16 @@ class AddressBook extends Model
 
         static::deleting(function ($model) {
             if(!$model->isForceDeleting()) {
-                return;
+               return;
             }
-
             $recipientIds = $model->recipients()->pluck('recipient_id');
             $model->recipients()->detach();
             foreach ($recipientIds as $recipientId) {
                 $recipient = Recipient::find($recipientId);
                 if ($recipient && $recipient->addressBooks()->count() === 0) {
                     $recipient->delete();
-                }
-            }  
-        });
-    }
+            }};
+    });}
 
     public function recipients(): BelongsToMany
     {

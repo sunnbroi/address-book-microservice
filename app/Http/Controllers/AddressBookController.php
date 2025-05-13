@@ -7,6 +7,7 @@ use App\Http\Requests\AddressBook\StoreAddressBookRequest;
 use App\Http\Requests\AddressBook\UpdateAddressBookRequest;
 use App\Http\Requests\AddressBook\BulkStoreAddressBookRequest;
 use App\Http\Requests\AddressBook\DestroyAddressBookRequest;
+use App\Models\Recipient;
 use Illuminate\Http\Request;
 use App\Models\AddressBook;
 use Illuminate\Http\JsonResponse;
@@ -85,10 +86,17 @@ class AddressBookController extends Controller
     {
         $validatedRequest = $request->validated();
         $recipientIds = $validatedRequest['recipient_ids'];
-
+        
         $addressBook->recipients()->syncWithoutDetaching($recipientIds);
-
-        return response()->json(['message' => 'Recipients attached']);
+        
+        $softDeletedRecipients = Recipient::onlyTrashed()
+            ->whereIn('id', $recipientIds)
+            ->get();
+            
+        foreach ($softDeletedRecipients as $recipient) {
+        $recipient->restore();
+    }
+    return response()->json(['message' => 'Recipients attached']);
     }
 
     public function detach(ADSAddressBookRequest $request, AddressBook $addressBook): JsonResponse // отвязка получателей от адресной книги

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('address_books_recipients', function (Blueprint $table) {
             $table->uuid('address_book_id');
             $table->uuid(column: 'recipient_id');
-            $table->timestamps();
+            $table->boolean('is_active')->default(true);
 
             $table->primary(['address_book_id', 'recipient_id']);
 
