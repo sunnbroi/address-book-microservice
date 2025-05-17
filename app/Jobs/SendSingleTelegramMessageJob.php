@@ -13,6 +13,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Log;
 
 class SendSingleTelegramMessageJob implements ShouldQueue
 {
@@ -33,43 +34,66 @@ class SendSingleTelegramMessageJob implements ShouldQueue
     {
         $message = Message::findOrFail($this->message_id);
         $recipient = Recipient::findOrFail($this->recipient_id);
+
+        $rateKey = 'telegram-send:global';
+
+        if (RateLimiter::tooManyAttempts($rateKey, 50)) {
+            $this->release(1); // отложим задачу на 1 секунду
+            return;
+        }
+
+        RateLimiter::hit($rateKey, 1);
+
+        try {
+              if (empty($recipient->telegram_user_id)) {
+                Log::warning('Recipient has no telegram_chat_id', [
+                    'recipient_id' => $recipient->id ?? null,
+                    'message_id' => $message->id ?? null,
+    ]);
+    return;
+            if ($message->type === 'message') {
+                $telegramService->sendMessage($recipient->telegram_user_id, $message->text);
+            } elseif (in_array($message->type, ['photo', 'document'])) {
+                $telegramService->sendMedia($message->type, $recipient->telegram_chat_id, $message->link, $message->text);
+            }
+          
+        }
         // Ограничение 50 сообщений в секунду
-        RateLimiter::attempt(
-            'telegram-send-limit:global',
-            50,
-            function () use ($telegramService, $message, $recipient) {
-                try {
-                    if ($message->type === 'message') {
-                        $telegramService->sendMessage($recipient->telegram_chat_id, $message->text);
-                    } elseif (in_array($message->type, ['photo', 'document'])) {
-                        $telegramService->sendMedia($message->type, $recipient->telegram_chat_id, $message->file, $message->text);
-                    }
+        DeliveryLog::create([
+            'message_id' => $message->id,
+            'address_book_id' => $message->address_book_id,
+            'recipient_id' => $recipient->id,
+            'status' => 'success',
+            'attempts' => $this->attempts(),
+            'delivered_at' => now(),
+        ]);
+        $this->markMessageAsSentIfAllDelivered($message);
 
-                    DeliveryLog::create([
-                        'message_id' => $message->id,
-                        'address_book_id' => $message->address_book_id,
-                        'recipient_id' => $recipient->id,
-                        'status' => 'success',
-                        'attempts' => $this->attempts(),
-                        'delivered_at' => now(),
-                    ]);
-                } catch (Exception $e) {
-                    // Логируем индивидуальную ошибку
-                    DeliveryLog::create([
-                        'message_id' => $message->id,
-                        'address_book_id' => $message->address_book_id,
-                        'recipient_id' => $recipient->id,
-                        'status' => 'failed',
-                        'error' => $e->getMessage(),
-                        'attempts' => $this->attempts(),
-                    ]);
+        } catch (Exception $e) {
+            DeliveryLog::create([
+                'message_id' => $message->id,
+                'address_book_id' => $message->address_book_id,
+                'recipient_id' => $recipient->id,
+                'status' => 'failed',
+                'error' => $e->getMessage(),
+                'attempts' => $this->attempts(),
+            ]);
 
-                    // Пробрасываем ошибку, чтобы сработал retry и backoff
-                    throw $e;
-                }
-            },
-            1 // секунда
-        );
+            throw $e; // Laravel сам повторит задачу, если есть tries и backoff
+        }
+    }
+
+        protected function markMessageAsSentIfAllDelivered(Message $message): void
+    {
+        $totalRecipients = $message->addressBook->recipients()->count();
+    
+        $successfulDeliveries = DeliveryLog::where('message_id', $message->id)
+            ->where('status', 'success')
+            ->count();
+    
+        if ($successfulDeliveries >= $totalRecipients) {
+            $message->update(['sent_at' => now()]);
+        }
     }
 
     public function failed(Exception $exception)

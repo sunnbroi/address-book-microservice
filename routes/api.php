@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AddressBookController;
 use App\Http\Controllers\RecipientController;
 use App\Http\Controllers\TelegramAddressBookController;
+use App\Http\Controllers\MessageController;
 
 Route::middleware([/*'auth:sanctum', */'verify.hmac'])->group(function (){
     Route::post('/login', [AuthController::class, 'login']); //получение токена
@@ -18,14 +19,15 @@ Route::middleware([/*'auth:sanctum', */'verify.hmac'])->group(function (){
 
     Route::get('address_books/{addressBook}', [RecipientController::class, 'show']);
     Route::post('address_books/{addressBook}' , [RecipientController::class, 'store']);
-    Route::delete('/address_books/{bookID}/{recepient}' , [RecipientController::class, 'destroy']);
+    Route::delete('/address_books/{bookID}/{recepient}' , [RecipientController::class, 'detach']);
 
     Route::post('recipients/{recipient}/attach', [RecipientController::class, 'attach']);
-    Route::post('recipients/{recipient}/detach', [RecipientController::class, 'detach']);
+    Route::post('recipients/{recipient}/detach', [RecipientController::class, 'detachRecipient']);
     Route::post('recipients/{recipient}/sync', [RecipientController::class, 'sync']);
     Route::post('recipients/bulk-store', [RecipientController::class, 'bulkStore']);
 
     // Route::post('/telegram/send-personal-message', [TelegramService::class, 'sendMessage']);
     Route::post('/telegram/send-message', [TelegramAddressBookController::class, 'sendMessage']);
+    Route::post('/messages', [MessageController::class, 'store']);
 
 });

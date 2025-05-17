@@ -17,7 +17,7 @@ class DeliveryLog extends Model
         'status',
         'error',
         'status',
-        'attempts',
+        'attempts',   
     ];
 
     public function message()
@@ -38,10 +38,10 @@ class DeliveryLog extends Model
     {
         return static::where(function ($query) {
             $query->where('status', 'success')
-                  ->where('updated_at', '<', now()->subDays(7))
+                  ->where('sent_at', '<', now()->subDays(7))
                   ->orWhere(function ($q) {
                       $q->where('status', 'failed')
-                        ->where('updated_at', '<', now()->subDays(30));
+                        ->where('sent_at', '<', now()->subDays(30));
                     });
         });
     }

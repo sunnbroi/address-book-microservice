@@ -15,8 +15,10 @@ class Message extends Model
     protected $fillable = [
         'id',
         'address_book_id',
+        'type',
         'text',
         'sent_at',
+        'link',
     ];
 
     public function addressBook()
