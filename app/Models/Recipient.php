@@ -17,7 +17,7 @@ class Recipient extends Model
 
     protected $fillable = [
         'id',
-        'telegram_user_id',
+        'chat_id',
         'username',
         'first_name',
         'last_name',

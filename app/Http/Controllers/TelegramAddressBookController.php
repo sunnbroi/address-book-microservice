@@ -10,6 +10,10 @@ use App\Jobs\SendTelegramToAddressBookJob;
 use App\Jobs\SendSingleTelegramMessageJob;
 use App\Models\Message;
 use Illuminate\Support\Str;
+use App\Models\Recipient;
+use App\Models\DeliveryLog;
+use App\Jobs\SendBatchTelegramMessageJob;
+use Illuminate\Support\Facades\Log;
 
 class TelegramAddressBookController extends Controller
 {
@@ -18,25 +22,29 @@ class TelegramAddressBookController extends Controller
     {
         $this->messageService = $messageService;
     }
-    public function sendMessage(MessageAddressBookRequest $request): JsonResponse
+    public function sendMessage(MessageAddressBookRequest $request): void
     {
         $validated = $request->validated();
-    
+        $addressBookId = $validated['address_book_id'];
         $message = Message::create([
             'id' => Str::uuid(),
-            'address_book_id' => $validated['address_book_id'] ?? null,
-            'recipient_id' => $validated['chat_id'] ?? null,
+            'address_book_id' => $addressBookId ?? null,
+            'recipient_id' => $validated['recipient_id'] ?? null,
             'type' => $validated['type'],
-            'text' => $validated['message'] ?? null,
+            'text' => $validated['text'] ?? null,
             'file' => $validated['file'] ?? null,
         ]);
-    
-        if ($message->recipient_id) {
-            SendSingleTelegramMessageJob::dispatch($message->id, $message->recipient_id);
-        } elseif ($message->address_book_id) {
-            SendTelegramToAddressBookJob::dispatch($message->id);
-        }
-        return response()->json(['status' => 'job dispatched']);
-        }
 
+        $chatIds = AddressBook::findOrFail($addressBookId)
+            ->recipients()
+            ->pluck('chat_id');
+         $chunks = $chatIds->chunk(50);
+
+        foreach ($chunks as $index => $chunk) {
+        SendBatchTelegramMessageJob::dispatch(
+            $chunk->toArray(),
+            $message->id
+        )->delay(now()->addSeconds($index)); // задержка между батчами
     }
+}
+}

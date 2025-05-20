@@ -9,7 +9,7 @@ class Message extends Model
 {
     use HasFactory;
 
-    public $incrementing = false; // UUID
+    public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [

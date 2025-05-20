@@ -14,11 +14,11 @@ class TelegramService
     public function __construct()
     {
         $this->botToken = config('services.telegram.bot_token'); // .env
-        $this->apiUrl = "https://api.telegram.org/bot{$this->botToken}/";
-    }
+            $this->apiUrl = "https://api.telegram.org/bot{$this->botToken}";
+        }
 
 
-    public function sendMessage(string $chatId, string $text): array
+        public function sendMessage(string $chatId, string $text): array
     {
         try {
             $response = Http::post("{$this->apiUrl}/sendMessage", [
@@ -38,6 +38,28 @@ class TelegramService
             throw $e;
         }
     }
+
+        public function isValidChatId(string $chatId): bool
+        {
+        try {
+        $response = Http::get("{$this->apiUrl}/getChat", [
+            'chat_id' => $chatId,
+        ]);
+
+        $data = $response->json();
+
+        if ($response->failed()) {
+            Log::warning('⚠️ getChat failed', ['chat_id' => $chatId, 'response' => $data]);
+            return false;
+        }
+
+        return isset($data['ok']) && $data['ok'] === true;
+        } catch (\Exception $e) {
+            Log::error('🚫 getChat exception', ['chat_id' => $chatId, 'error' => $e->getMessage()]);
+            return false;
+        }
+}
+
 
     public function sendMedia(string $type, string $chatId, string $file, ?string $caption = null): array
     {

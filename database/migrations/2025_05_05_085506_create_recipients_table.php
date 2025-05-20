@@ -13,7 +13,7 @@ return new class extends Migration
     {
        Schema::create('recipients', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('telegram_user_id');
+            $table->string('chat_id');
             $table->string('invite_key')->nullable();
             $table->string('username')->nullable();
             $table->string('first_name')->nullable();
