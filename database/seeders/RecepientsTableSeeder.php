@@ -15,7 +15,7 @@ class RecepientsTableSeeder extends Seeder
     {
         DB::table('recipients')->insert([
             'id'=> 'ASCXSSDVSDFCD',
-            'telegram_user_id' => 'Rowssdxz',
+            'chat_id' => 'Rowssdxz',
             'username' => 'tfgegbdxbvf',
             'first_name' => 'wqD',
             'last_name' => 'lASDFFD',

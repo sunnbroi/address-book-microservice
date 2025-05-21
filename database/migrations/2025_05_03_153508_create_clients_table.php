@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->uuid('client_key')->unique();
-            $table->unsignedBigInteger('api_user_id')->unique()->nullable();
+           /* $table->unsignedBigInteger('api_user_id')->unique()->nullable(); */
             $table->foreign('api_user_id')->references('id')->on('api_users')->onDelete('cascade');
             $table->string('name')->nullable();
             $table->string('secret_key');

@@ -58,7 +58,7 @@ class TelegramService
             
             $tmpPath = $tmpDir . '/' . Str::uuid() . '.mp4';
 
-            $videoResponse = Http::timeout(30)->retry(3, 5000)->get($file);
+            $videoResponse = Http::timeout(30)->get($file);
             if (!$videoResponse->successful()) {
                 throw new \Exception("Failed to download file from URL");
             }

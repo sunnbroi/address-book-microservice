@@ -34,9 +34,9 @@ class Message extends Model
     {
         return $this->hasMany(DeliveryLog::class);
     }
-//     public function prunable()
-// {
-//     return static::where('sent_at', '<', now()->subMonths(6));
-// }
+    public function prunable()
+    {
+         return static::where('sent_at', '<', now()->subMonths(6));
+    }
 
 }

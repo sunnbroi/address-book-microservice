@@ -20,6 +20,7 @@ class AddressBookFactory extends Factory
             'invite_key' => $this->faker->regexify('[A-Z0-9]{10}') ,
             'client_key'=>Client::factory()->create()->client_key,
             'name' => $this->faker->company(),
+            'type' => 'manual',
         ];
     }
 }
