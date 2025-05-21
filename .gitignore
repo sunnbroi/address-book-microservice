@@ -5,7 +5,7 @@
 /public/storage
 /storage/*.key
 /storage/pail
-
+/storage/app/tmp
 
 #/vendor
 #/bootstrap

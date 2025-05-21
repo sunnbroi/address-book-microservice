@@ -24,9 +24,10 @@ class MessageAddressBookRequest extends FormRequest
         return [
             'address_book_id' => 'nullable|uuid|exists:address_books,id',
             'recipient_id' => 'nullable|uuid|exists:recipients,id',
-            'type' => 'required|string|in:message,photo,document',
+            'required_without_all:address_book_id,recipient_id',
+            'type' => 'required|string|in:message,photo,document,video,audio,voice',
             'text' => 'nullable|string',
-            'file' => 'required_if:type,photo,document', // обязательно только для фото/документов
+            'link' => 'string|required_if:type,photo,document,video,audio,voice', // обязательно только для фото/документов
         ];
     }
 }

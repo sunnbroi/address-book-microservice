@@ -5,6 +5,7 @@ use App\Http\Controllers\AddressBookController;
 use App\Http\Controllers\RecipientController;
 use App\Http\Controllers\TelegramAddressBookController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\TelegramWebhookController;
 
 Route::middleware([/*'auth:sanctum', */'verify.hmac'])->group(function (){
     Route::post('/login', [AuthController::class, 'login']); //получение токена
@@ -29,5 +30,6 @@ Route::middleware([/*'auth:sanctum', */'verify.hmac'])->group(function (){
     // Route::post('/telegram/send-personal-message', [TelegramService::class, 'sendMessage']);
     Route::post('/telegram/send-message', [TelegramAddressBookController::class, 'sendMessage']);
     Route::post('/messages', [MessageController::class, 'store']);
-
 });
+
+Route::post('/telegram/webhook', [TelegramWebhookController::class, 'handle']);

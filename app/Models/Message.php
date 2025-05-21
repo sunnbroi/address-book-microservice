@@ -15,6 +15,7 @@ class Message extends Model
     protected $fillable = [
         'id',
         'address_book_id',
+        'recipient_id',
         'type',
         'text',
         'sent_at',
@@ -24,6 +25,10 @@ class Message extends Model
     public function addressBook()
     {
         return $this->belongsTo(AddressBook::class);
+    }
+     public function recipient()
+    {
+        return $this->belongsTo(Recipient::class);
     }
     public function deliveryLogs()
     {

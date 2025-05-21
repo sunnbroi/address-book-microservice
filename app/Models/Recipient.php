@@ -22,6 +22,7 @@ class Recipient extends Model
         'first_name',
         'last_name',
         'type',
+        'is_active',
         'blocked_at',
     ];
 
@@ -54,10 +55,20 @@ class Recipient extends Model
         return $this->belongsToMany(AddressBook::class, 'address_books_recipients');
     }
 
-    public function prunable(): Builder
+    public function prunable(): Recipient
     {
-        return static::onlyTrashed()
-            ->whereDoesntHave('addressBooks')
-            ->where('deleted_at', '<=', now()->subDays(30));
+        return static::where(function ($model) {
+            $model->onlyTrashed()
+                  ->whereDoesntHave('addressBooks')
+                  ->where('deleted_at', '<=', now()->subDays(30));
+        })->orWhere(function ($model) {
+            $model->whereNotNull('blocked_at')
+                  ->where('blocked_at', '<=', now()->subDays(30));
+        });
+}
+
+        public function scopeActive($model)
+    {
+        return $model->where('is_active', true);
     }
 }
