@@ -39,6 +39,16 @@ class RecipientController extends Controller
         return response()->json($recipient, 201);
     }
 
+    public function destroy(Request $request, string $id): JsonResponse // удаление получателя
+    {
+        $recipient = $this->findRecipientOrFail($id);
+        if ($recipient->trashed()) {
+            return response()->json(['message' => 'Recipient already deleted'], 400);
+        }
+        $recipient->delete();
+        return response()->json(['message' => 'Recipient deleted'], 200);
+    }
+
     public function detach(Request $request, string $idAddressBook, string $idRecipient): JsonResponse// отвязка получателя от адресной книги
     {
         $detachRecipient = $this->recipientService->detachRecipient(request: $request, idAddressBook: $idAddressBook, idRecipient: $idRecipient);

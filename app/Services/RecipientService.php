@@ -20,7 +20,7 @@ class RecipientService
 
         $data = [
             'id' => (string) Str::uuid(),
-            'telegram_user_id' => $validated['telegram_user_id'],
+            'chat_id' => $validated['chat_id'],
         ];
         foreach (['username', 'first_name', 'last_name', 'type'] as $field) {
             if (isset($validated[$field])) {
@@ -34,7 +34,7 @@ class RecipientService
     public function detachRecipient(Request $request, string $idAddressBook, string $idRecipient): JsonResponse
     {
         $clientKey = $request->header('X-Client-Key');
-        $request = $request->validated();
+        $request = $request->input();
         if(!$idAddressBook || !$idRecipient){
             return response()->json(['message' => 'No IDs provided for deletion'], 400);        
         }else{
