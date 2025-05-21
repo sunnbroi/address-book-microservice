@@ -30,8 +30,9 @@ class RecipientController extends Controller
 */
     public function store(StoreRecipientRequest $request, string $id): JsonResponse // создание получателя в аддресной книге
     {
+        
         $recipient = $this->recipientService
-        ->createRecipient($request, $id);
+            ->createRecipient($request, $id);
         if (!$recipient) {
             return response()->json(['message' => 'Recipient not created'], 400);
         }

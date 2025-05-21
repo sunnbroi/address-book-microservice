@@ -21,6 +21,7 @@ class AddressBook extends Model
     protected $fillable = [
         'id',
         'client_key',
+        'invite_key',
         'name',
     ];
 
