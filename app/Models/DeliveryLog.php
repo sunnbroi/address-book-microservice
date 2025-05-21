@@ -17,8 +17,13 @@ class DeliveryLog extends Model
         'status',
         'error',
         'status',
-        'attempts',   
+        'attempts',
+        'delivered_at',   
     ];
+
+    protected $casts = [
+    'delivered_at' => 'datetime',
+];
 
     public function message()
     {

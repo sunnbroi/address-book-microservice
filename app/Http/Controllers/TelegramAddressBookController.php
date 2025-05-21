@@ -33,6 +33,7 @@ class TelegramAddressBookController extends Controller
             'type' => $validated['type'],
             'text' => $validated['text'] ?? null,
             'link' => $validated['link'] ?? null,
+            'sent_at' => now(),
         ]);
 
          $chatIds = collect();

@@ -20,7 +20,7 @@ class TelegramService
         }
 
 
-        public function sendMessage(string $chatId, string $text)
+        public function sendMessage(string $chatId, string $text): array
     {
             $response = Http::post("{$this->apiUrl}/sendMessage", [
                 'chat_id' => $chatId,
