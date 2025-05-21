@@ -23,20 +23,22 @@ class TelegramAddressBookController extends Controller
         $this->messageService = $messageService;
     }
     public function sendMessage(MessageAddressBookRequest $request): void
-    {
-        $validated = $request->validated();
-        
-        $message = Message::create([
-            'id' => Str::uuid(),
-            'address_book_id' => $validated['address_book_id'] ?? null,
-            'recipient_id' => $validated['recipient_id'] ?? null,
-            'type' => $validated['type'],
-            'text' => $validated['text'] ?? null,
-            'link' => $validated['link'] ?? null,
-            'sent_at' => now(),
-        ]);
+{
+    $validated = $request->validated();
 
-         $chatIds = collect();
+    // Создание сообщения
+    $message = Message::create([
+        'id'              => Str::uuid(),
+        'address_book_id' => $validated['address_book_id'] ?? null,
+        'recipient_id'    => $validated['recipient_id'] ?? null,
+        'type'            => $validated['type'],
+        'text'            => $validated['text'] ?? null,
+        'link'            => $validated['link'] ?? null,
+        'sent_at'         => now(),
+    ]);
+
+    // Сбор chat_id
+    $chatIds = collect();
 
     if (!empty($validated['address_book_id'])) {
         $addressBook = AddressBook::with('recipients')->findOrFail($validated['address_book_id']);
@@ -50,13 +52,21 @@ class TelegramAddressBookController extends Controller
 
     $chatIds = $chatIds->unique()->filter();
 
-         $chunks = $chatIds->chunk(50);
+    if ($chatIds->isEmpty()) {
+        Log::warning('Нет получателей для отправки сообщения.', [
+            'message_id' => $message->id,
+            'address_book_id' => $validated['address_book_id'] ?? null,
+            'recipient_id' => $validated['recipient_id'] ?? null,
+        ]);
+        return;
+    }
 
-        foreach ($chunks as $index => $chunk) {
+    // Батчами по 50 штук с задержкой в секунду
+    $chatIds->chunk(50)->each(function ($chunk, $index) use ($message) {
         SendBatchTelegramMessageJob::dispatch(
             $chunk->toArray(),
             $message->id
-        )->delay(now()->addSeconds($index)); // задержка между батчами
-    }
+        )->delay(now()->addSeconds($index));
+    });
 }
 }

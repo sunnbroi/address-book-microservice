@@ -29,107 +29,106 @@ class SendBatchTelegramMessageJob implements ShouldQueue
 
     public function handle(TelegramService $telegramService): void
     {
+        Log::info('▶️ Начало обработки батча', [
+    'time' => now()->toDateTimeString(),
+    'chat_ids' => $this->chatIds,
+]);
         $message = Message::findOrFail($this->messageId);
 
+        $recipients = Recipient::whereIn('chat_id', $this->chatIds)->get()->keyBy('chat_id');
+        $recipientIds = $recipients->pluck('id')->all();
+
+        $sentLogs = DeliveryLog::where('message_id', $message->id)
+            ->whereIn('recipient_id', $recipientIds)
+            ->where('status', 'success')
+            ->pluck('recipient_id')
+            ->flip();
+
+        $logBatch = [];
+        $successfulLogs = [];
+        $now = now();
+
         foreach ($this->chatIds as $chatId) {
-            $recipient = Recipient::where('chat_id', $chatId)->first();
+    $recipient = $recipients[$chatId] ?? null;
 
-            if (!$recipient) {
-                Log::warning("Recipient not found", ['chat_id' => $chatId]);
-                continue;
-            }
-
-            $alreadySent = DeliveryLog::where([
-                ['message_id', $message->id],
-                ['recipient_id', $recipient->id],
-                ['status', 'success'],
-            ])->exists();
-
-            if ($alreadySent) {
-                continue;
-            }
-
-            try {
-                RateLimiter::attempt(
-                    'telegram:rate-limit:' . $chatId,
-                    50,
-                    fn () => $this->sendToRecipient($telegramService, $message, $recipient)
-                , 1);
-            } catch (\Throwable $e) {
-                $this->logFailure($message, $recipient, $chatId, $e->getMessage());
-            }
-        }
+    if (!$recipient || isset($sentLogs[$recipient->id])) {
+        continue;
     }
 
-    private function sendToRecipient(TelegramService $telegramService, Message $message, Recipient $recipient): void
-    {
-
+    try {
         $chatId = $recipient->chat_id;
-Log::debug('Отправка начата', [
-    'chat_id' => $chatId,
-    'type' => $message->type,
-    'link' => $message->link,
-]);
+
         $response = match (true) {
             $message->type === 'message' =>
                 $telegramService->sendMessage($chatId, $message->text),
-
             $this->isMediaType($message->type) =>
                 $telegramService->sendMedia($message->type, $chatId, $message->link, $message->text),
-
-            default => throw new \InvalidArgumentException("Unsupported message type: {$message->type}")
+            default => throw new \InvalidArgumentException("Unsupported message type: {$message->type}"),
         };
 
         $success = is_array($response) && ($response['ok'] ?? false);
 
-        DeliveryLog::updateOrCreate(
-            [
-                'message_id'   => $message->id,
-                'recipient_id' => $recipient->id,
-            ],
-            [
-                'address_book_id' => $message->address_book_id,
-                'status'          => $success ? 'success' : 'failed',
-                'error'           => $success ? null : json_encode($response, JSON_UNESCAPED_UNICODE),
-                'attempts'        => $this->attempts(),
-                'delivered_at'    => $success ? now()->format('Y-m-d H:i:s.u') : null,
-            ]
+        $logBatch[] = $this->createLogEntry(
+            $message,
+            $recipient,
+            $success ? 'success' : ($this->attempts() >= 7 ? 'error' : 'failed'),
+            $success ? null : json_encode($response, JSON_UNESCAPED_UNICODE),
+            $success ? $now->format('Y-m-d H:i:s.u') : null,
+            $now
         );
 
         if ($success) {
-            Log::info('Сообщение отправлено', ['chat_id' => $chatId]);
+            $successfulLogs[] = $chatId;
+        }
+    } catch (\Throwable $e) {
+        $this->logFailure($message, $recipient, $chatId, $e->getMessage(), $logBatch, $now);
+    }
+}
+        if (!empty($logBatch)) {
+            LogDeliveryResultJob::dispatch($logBatch);
         }
 
-        if (!$success) {
-            if ($this->attempts() >= 7) {
-                DeliveryLog::where('message_id', $message->id)
-                    ->where('recipient_id', $recipient->id)
-                    ->update(['status' => 'error']);
-            }
-
-            throw new \Exception('Telegram API responded with error');
+        if (!empty($successfulLogs)) {
+            Log::info('Успешно отправленные сообщения', ['chat_ids' => $successfulLogs]);
         }
     }
 
-    private function logFailure(Message $message, ?Recipient $recipient, string $chatId, string $error): void
+    private function logFailure(Message $message, ?Recipient $recipient, string $chatId, string $error, array &$logBatch, $now): void
     {
-        DeliveryLog::updateOrCreate(
-            [
-                'message_id' => $message->id,
-                'recipient_id' => $recipient?->id,
-            ],
-            [
-                'address_book_id' => $message->address_book_id ?? null,
-                'status' => $this->attempts() >= 7 ? 'error' : 'failed',
-                'error' => $error,
-                'attempts' => $this->attempts(),
-            ]
+        $logBatch[] = $this->createLogEntry(
+            $message,
+            $recipient,
+            $this->attempts() >= 7 ? 'error' : 'failed',
+            $error,
+            null,
+            $now
         );
 
         Log::error('Ошибка при отправке сообщения', [
             'chat_id' => $chatId,
             'error' => $error,
         ]);
+    }
+
+    private function createLogEntry(
+        Message $message,
+        Recipient $recipient,
+        string $status,
+        ?string $error = null,
+        ?string $deliveredAt = null,
+        $now = null
+    ): array {
+        return [
+            'message_id'      => $message->id,
+            'recipient_id'    => $recipient->id,
+            'address_book_id' => $message->address_book_id,
+            'status'          => $status,
+            'error'           => $error,
+            'attempts'        => $this->attempts(),
+            'delivered_at'    => $deliveredAt,
+            'created_at'      => $now ?? now(),
+            'updated_at'      => $now ?? now(),
+        ];
     }
 
     private function isMediaType(string $type): bool
