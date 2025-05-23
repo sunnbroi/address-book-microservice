@@ -22,11 +22,11 @@ class MessageAddressBookRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'address_book_id' => 'nullable|uuid|exists:address_books,id',
-            'recipient_id' => 'nullable|uuid|exists:recipients,id',
+            'address_book_id' => 'nullable|uuid|exists:address_books,id', 'size:36',
+            'recipient_id' => 'nullable|uuid|exists:recipients,id', 'size:36',
             'required_without_all:address_book_id,recipient_id',
             'type' => 'required|string|in:message,photo,document,video,audio,voice',
-            'text' => 'nullable|string',
+            'text' => 'nullable|string', 'max:4096', // текст сообщения
             'link' => 'string|required_if:type,photo,document,video,audio,voice', // обязательно только для фото/документов
         ];
     }

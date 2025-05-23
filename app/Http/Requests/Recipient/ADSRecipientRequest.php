@@ -23,7 +23,7 @@ class ADSRecipientRequest extends FormRequest
     {
         return [
             'address_book_ids' => ['required', 'array'],   
-            'address_book_ids.*' => ['uuid', 'exists:address_books,id'], // существует ли каждый элемент в базе
+            'address_book_ids.*' => ['uuid', 'exists:address_books,id', 'size:36'], // существует ли каждый элемент в базе
         ];
     }
 }

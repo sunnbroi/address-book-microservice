@@ -29,10 +29,10 @@ class SendBatchTelegramMessageJob implements ShouldQueue
 
     public function handle(TelegramService $telegramService): void
     {
-        Log::info('▶️ Начало обработки батча', [
-    'time' => now()->toDateTimeString(),
-    'chat_ids' => $this->chatIds,
-]);
+                Log::info('▶️ Начало обработки батча', [
+            'time' => now()->toDateTimeString(),
+            'chat_ids' => $this->chatIds,
+        ]);
         $message = Message::findOrFail($this->messageId);
 
         $recipients = Recipient::whereIn('chat_id', $this->chatIds)->get()->keyBy('chat_id');

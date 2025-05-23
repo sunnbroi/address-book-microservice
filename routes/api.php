@@ -13,9 +13,9 @@ use App\Http\Controllers\MessageStatusController;
         Route::apiResource('address-books', AddressBookController::class);// crud address books
         Route::apiResource('recipients', RecipientController::class); // crud recipients
 
-        Route::get('recipients/{addressBook}', [RecipientController::class, 'show']);
+        Route::get('address-books/{addressBook}', [RecipientController::class, 'show']);
         Route::post('address-books/{addressBook}' , [RecipientController::class, 'store']);
-        Route::delete('/address-books/{bookID}/{recepient}' , [RecipientController::class, 'detach']);
+        Route::delete('/address-books/{bookID}/{recepient}' , [RecipientController::class, 'delete']);
 
         
         Route::post('/telegram/send-message', [TelegramAddressBookController::class, 'sendMessage']);

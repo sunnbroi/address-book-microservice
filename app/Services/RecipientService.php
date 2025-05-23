@@ -10,31 +10,37 @@ use Illuminate\Http\Request;
 
 class RecipientService
 {
-    public function createRecipient(StoreRecipientRequest $request,  string $addressBookId): ?Recipient
-    {
-        $clientKey = $request->header('X-Client-Key');
-        $validated = $request->validated();
-        $addressBook = AddressBook::where('id', $addressBookId)
-            ->where('client_key', $clientKey)->first();
-        if (!$addressBook) {return response()->json(['message' => 'Address book not found'], 404);}
+    public function createRecipient(StoreRecipientRequest $request, string $addressBookId): ?Recipient
+{
+    $clientKey = $request->header('X-Client-Key');
+    $validated = $request->validated();
 
-        $data = [
-            'id' => (string) Str::uuid(),
-            'chat_id' => $validated['chat_id'],
-        ];
-        foreach (['username', 'first_name', 'last_name', 'type'] as $field) {
-            if (isset($validated[$field])) {
-                $data[$field] = $validated[$field];
-            }
-            $recipient = Recipient::create($data);
-            $addressBook->recipients()->attach($recipient->id);
-            return $recipient;
-        }
-        }
-    public function detachRecipient(Request $request, string $idAddressBook, string $idRecipient): JsonResponse
+    $addressBook = AddressBook::where('id', $addressBookId)
+        ->where('client_key', $clientKey)
+        ->first();
+
+    if (!$addressBook) {
+        return null;
+    }
+
+    $recipient = Recipient::create([
+        'id'         => (string) Str::uuid(),
+        'chat_id'    => $validated['chat_id'],
+        'username'   => $validated['username'] ?? null,
+        'first_name' => $validated['first_name'] ?? null,
+        'last_name'  => $validated['last_name'] ?? null,
+        'type'       => $validated['type'] ?? null,
+    ]);
+
+    $addressBook->recipients()->attach($recipient->id);
+
+    return $recipient;
+}
+
+    public function deleteRecipient(Request $request, string $idAddressBook, string $idRecipient): JsonResponse
     {
         $clientKey = $request->header('X-Client-Key');
-        $request = $request->input();
+
         if(!$idAddressBook || !$idRecipient){
             return response()->json(['message' => 'No IDs provided for deletion'], 400);        
         }else{
@@ -52,8 +58,8 @@ class RecipientService
         if (!$recipient) {
             return response()->json(['message' => 'Recipient not found'], 404);
         }
-        $recipient->addressBooks()->detach($idAddressBook);
-        return response()->json(['message' => 'Recipient detached from address book'], 200);
+        $recipient->delete();
+        return response()->json(['message' => 'Recipient detached and deleted'], 200);
     }
     
 }

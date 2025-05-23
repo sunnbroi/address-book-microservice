@@ -14,9 +14,9 @@ class MessageSendRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'address_book_id' => ['required', 'uuid'],
+            'address_book_id' => ['required', 'uuid', 'size:36',],
             'type' => ['required', Rule::in(['message', 'photo', 'document'])],
-            'text' => ['required', 'string'],
+            'text' => ['required', 'string', 'max:4096'],
             'link' => [
                 'sometimes',
                 'url',

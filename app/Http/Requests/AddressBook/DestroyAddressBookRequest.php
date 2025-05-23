@@ -23,7 +23,7 @@ class DestroyAddressBookRequest extends FormRequest
     {
         return [
             'address_book_ids' => ['required', 'array'],
-            'address_book_ids.*' => ['uuid', 'exists:address_books,id'],
+            'address_book_ids.*' => ['uuid', 'exists:address_books,id', 'size:36'],
         ];
     }
 }

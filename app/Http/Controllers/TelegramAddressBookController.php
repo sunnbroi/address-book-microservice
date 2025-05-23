@@ -26,7 +26,6 @@ class TelegramAddressBookController extends Controller
 {
     $validated = $request->validated();
 
-    // Создание сообщения
     $message = Message::create([
         'id'              => Str::uuid(),
         'address_book_id' => $validated['address_book_id'] ?? null,
@@ -61,7 +60,6 @@ class TelegramAddressBookController extends Controller
         return;
     }
 
-    // Батчами по 50 штук с задержкой в секунду
     $chatIds->chunk(50)->each(function ($chunk, $index) use ($message) {
         SendBatchTelegramMessageJob::dispatch(
             $chunk->toArray(),

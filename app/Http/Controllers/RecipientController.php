@@ -28,34 +28,38 @@ class RecipientController extends Controller
         return Recipient::all();
     } 
 */
-    public function store(StoreRecipientRequest $request, string $id): JsonResponse // создание получателя в аддресной книге
+    public function store(StoreRecipientRequest $request, string $id): JsonResponse
     {
-        
-        $recipient = $this->recipientService
-            ->createRecipient($request, $id);
+        $recipient = $this->recipientService->createRecipient($request, $id);
+    
         if (!$recipient) {
-            return response()->json(['message' => 'Recipient not created'], 400);
+            return response()->json(['message' => 'Address book not found or recipient not created'], 404);
         }
+    
         return response()->json($recipient, 201);
     }
 
-    public function destroy(Request $request, string $id): JsonResponse // удаление получателя
+    public function destroy(DestroyRecipientRequest $request): JsonResponse // удаление получателей
     {
-        $recipient = $this->findRecipientOrFail($id);
-        if ($recipient->trashed()) {
-            return response()->json(['message' => 'Recipient already deleted'], 400);
+        $validated = $request->validated();
+        $recipientIds = $validated['recipient_ids'];
+
+        if (empty($recipientIds)) {
+            return response()->json(['message' => 'No recipient IDs provided for deletion'], 400);
         }
-        $recipient->delete();
-        return response()->json(['message' => 'Recipient deleted'], 200);
+
+        Recipient::whereIn('id', $recipientIds)->delete();
+
+        return response()->json(['message' => 'Recipients deleted successfully'], 200);
     }
 
-    public function detach(Request $request, string $idAddressBook, string $idRecipient): JsonResponse// отвязка получателя от адресной книги
+    public function delete(Request $request, string $idAddressBook, string $idRecipient): JsonResponse// отвязка получателя от адресной книги
     {
-        $detachRecipient = $this->recipientService->detachRecipient(request: $request, idAddressBook: $idAddressBook, idRecipient: $idRecipient);
-        if ($detachRecipient->getStatusCode() !== 200) {
-            return $detachRecipient;
+        $deleteRecipient = $this->recipientService->deleteRecipient(request: $request, idAddressBook: $idAddressBook, idRecipient: $idRecipient);
+        if ($deleteRecipient->getStatusCode() !== 200) {
+            return $deleteRecipient;
         }
-        return response()->json(['message' => 'Recipient detached from address book'], 200); 
+        return response()->json(['message' => 'Recipient detached and deleted from address book'], 200); 
     }
 
     public function bulkStore(BulkStoreRecipientRequest $request): JsonResponse // массовое создание получателей

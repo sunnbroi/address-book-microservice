@@ -22,7 +22,7 @@ class UpdateRecipientRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'chat_id' => ['required', 'string']
+            'chat_id' => ['required', 'string', 'max:255'],
         ];
     }
 }

@@ -22,10 +22,10 @@ class StoreRecipientRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'chat_id' => ['required', 'string'],
-            'username' => ['sometimes', 'string'],
-            'first_name' => ['sometimes', 'string'],
-            'last_name' => ['sometimes', 'string'],
+            'chat_id' => ['required', 'string', 'max:255'],
+            'username' => ['sometimes', 'string', 'max:255'],
+            'first_name' => ['sometimes', 'string', 'max:255'],
+            'last_name' => ['sometimes', 'string', 'max:255'],
             'type' => ['sometimes', 'string'],
         ];
     }

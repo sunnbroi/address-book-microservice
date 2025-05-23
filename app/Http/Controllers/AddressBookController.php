@@ -50,9 +50,7 @@ class AddressBookController extends Controller
     {
         $validatedRequest = $request->validated();
         $client = $request->header('X-Client-Key');
-        
         $book = $this->findAddressBookOrFail($id, $client);
-
         if(array_key_exists('invite_key', $validatedRequest)&& $validatedRequest['invite_key'] == true) {
             $validatedRequest['invite_key'] = (string) Str::uuid();
         }

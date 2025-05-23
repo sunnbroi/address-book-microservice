@@ -16,8 +16,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'client_key' => 'required|string',
-            'secret_key' => 'required|string',
+            'client_key' => 'required|string', 'max:36',
+            'secret_key' => 'required|string', 'max:36',
         ];
     }
 }

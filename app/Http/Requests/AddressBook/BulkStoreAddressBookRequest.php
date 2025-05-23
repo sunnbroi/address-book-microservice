@@ -23,8 +23,8 @@ class BulkStoreAddressBookRequest extends FormRequest
     {
         return [
             'address_books' => ['required', 'array'],
-            'address_books.*.client_key' => ['required', 'exists:clients,client_key'],
-            'address_books.*.name' => ['required', 'string'],
+            'address_books.*.client_key' => ['required', 'exists:clients,client_key', 'size:36'],
+            'address_books.*.name' => ['required', 'string', 'max:255'],
         ];
     }
 }
