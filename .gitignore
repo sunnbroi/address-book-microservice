@@ -1,37 +1,43 @@
-/.phpunit.cache
+# Laravel
+.env
+.env.*
+.phpunit.result.cache
+.phpunit.cache
+/vendor
 /node_modules
-/public/build
 /public/hot
+/public/build
+/public/storage
 /storage/*.key
 /storage/pail
 /storage/app/tmp
-/vendor
 /storage/logs/
 /storage/framework/*
 /bootstrap/cache/*
-/public/storage
+/bootstrap/
+
+# Базы данных и резервные копии
 *.sqlite
 *.sql
-*.log
 *.zip
 *.bak
-/bootstrap
-#/config
-#/resourses
-.env
-.env.backup
-.env.production
-.phpactor.json
-.phpunit.result.cache
+
+# IDE и редакторы
+/.idea
+/.vscode
+/.fleet
+/.nova
+/.zed
+launch.json
+
+# Конфиги и зависимости, которые не должны попасть в репу
 Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
-/auth.json
-/.fleet
-/.idea
-/.nova
-/.vscode
-/.zed
-launch.json
+auth.json
+.phpactor.json
 
+# Неигнорируемое (раскомментировать при необходимости)
+# /config
+# /resources
