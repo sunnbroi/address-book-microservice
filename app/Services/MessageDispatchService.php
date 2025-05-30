@@ -16,24 +16,15 @@ class MessageDispatchService
 {
     public function dispatch(array $validated): JsonResponse
     {
-        Log::info('📩 Контроллер вызван');
-
         try {
             $message = $this->createMessage($validated);
         } catch (\Throwable $e) {
-            Log::error('❌ Ошибка при создании сообщения', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
             return response()->json(['message' => 'Ошибка при создании сообщения'], 500);
         }
 
         $chatIds = $this->getChatIds($validated);
 
         if ($chatIds->isEmpty()) {
-            Log::warning('⚠️ Нет получателей для отправки сообщения.', [
-                'message_id' => $message->id,
-            ]);
             return response()->json(['message' => 'Нет получателей для отправки'], 400);
         }
 

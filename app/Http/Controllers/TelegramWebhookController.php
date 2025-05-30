@@ -43,11 +43,6 @@ class TelegramWebhookController extends Controller
                 'is_active' => true,
             ]
         );
-
-        Log::info('👤 Пользователь добавлен/обновлён', [
-            'chat_id' => $chat['id'],
-            'first_name' => $chat['first_name'] ?? null,
-        ]);
     }
 
     protected function handleGroupMigration(array $message): void
@@ -58,12 +53,8 @@ class TelegramWebhookController extends Controller
         $updated = AddressBook::where('chat_id', $oldId)->update(['chat_id' => $newId]);
 
         if ($updated) {
-            Log::info('🔁 Группа стала супергруппой', [
-                'old_chat_id' => $oldId,
-                'new_chat_id' => $newId,
-            ]);
+
         } else {
-            Log::warning('⚠️ Не найдена группа для обновления', ['old_chat_id' => $oldId]);
         }
     }
 
@@ -97,11 +88,6 @@ class TelegramWebhookController extends Controller
         $updatedAt = $recipient->updated_at;
 
         if ($updatedAt && $updatedAt->timestamp >= $timestamp) {
-            Log::info('⏳ Устаревшее событие Telegram', [
-                'chat_id' => $chatId,
-                'время_вебхука' => $eventTime->toDateTimeString(),
-                'время_в_базе' => $updatedAt->toDateTimeString(),
-            ]);
             return;
         }
 
@@ -110,7 +96,6 @@ class TelegramWebhookController extends Controller
                 'is_active' => false,
                 'blocked_at' => now(),
             ]);
-            Log::warning('🚫 Пользователь отключил бота', ['chat_id' => $chatId, 'причина' => $status]);
         }
 
         if ($status === 'member') {
@@ -118,7 +103,6 @@ class TelegramWebhookController extends Controller
                 'is_active' => true,
                 'blocked_at' => null,
             ]);
-            Log::info('✅ Пользователь снова активен', ['chat_id' => $chatId]);
         }
     }
 
@@ -134,10 +118,5 @@ class TelegramWebhookController extends Controller
                 'deleted_at' => null,
             ]
         );
-
-        Log::info('✅ Бот добавлен в Telegram-группу', [
-            'chat_id' => $chatId,
-            'title' => $title,
-        ]);
     }
 }

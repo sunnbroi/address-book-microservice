@@ -33,30 +33,12 @@ class SendSingleTelegramMessageJob implements ShouldQueue
         $message = Message::find($this->messageId);
 
         if (!$recipient || !$message) {
-            Log::warning("❌ Получатель или сообщение не найдено", [
-                'chat_id' => $this->chatId,
-                'message_id' => $this->messageId,
-            ]);
             return;
         }
 
         try {
-            Log::info("📨 Отправка сообщения Telegram", [
-                'chat_id' => $this->chatId,
-                'recipient_id' => $recipient->id,
-                'message' => $message->only(['id', 'type', 'text']),
-            ]);
-
             $response = $telegramService->sendMessage($this->chatId,$message->text);
-
-            Log::info("📬 Ответ Telegram", [
-                'chat_id' => $this->chatId,
-                'response' => $response,
-            ]);
         } catch (\Throwable $e) {
-            Log::error("❌ Ошибка отправки для chat_id: {$this->chatId}", [
-                'error' => $e->getMessage(),
-            ]);
         }
     }
 }

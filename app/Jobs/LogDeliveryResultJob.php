@@ -33,13 +33,7 @@ class LogDeliveryResultJob implements ShouldQueue
                 ['message_id', 'recipient_id'],
                 ['status', 'error', 'attempts', 'delivered_at', 'error', 'updated_at']
             );
-
-            Log::info('Логи доставки успешно сохранены', ['count' => count($this->logBatch)]);
         } catch (\Throwable $e) {
-            Log::error('Ошибка при записи логов доставки', [
-                'error' => $e->getMessage(),
-                'logs' => $this->logBatch,
-            ]);
         }
     }
 }

@@ -26,7 +26,6 @@ class TelegramService
                 'chat_id' => $chatId,
                 'text' => $text,
             ]);
-            Log::info('Telegram response', ['response' => $response]);
 
             return $this->handleResponse($response);
     }
