@@ -13,6 +13,12 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
+    /**
+ * Главный сидер для тестов и наполнения БД.
+ *
+ * 💡 Если вы просто начинаете разработку — используйте только ClientsTableSeeder.
+ *   php artisan db:seed --class=ClientsTableSeeder
+ */
     public function run(): void
     {
         Client::factory(2)->create()->each(function ($client) {
