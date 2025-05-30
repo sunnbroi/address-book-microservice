@@ -7,6 +7,7 @@ use App\Http\Controllers\TelegramAddressBookController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\TelegramWebhookController;
 use App\Http\Controllers\MessageStatusController;
+use App\Http\Controllers\QueueTestController;
 
     Route::middleware(['verify.hmac'])->group(function (){
         
@@ -15,14 +16,15 @@ use App\Http\Controllers\MessageStatusController;
 
         Route::get('address-books/{addressBook}', [RecipientController::class, 'show']);
         Route::post('address-books/{addressBook}' , [RecipientController::class, 'store']);
-        Route::delete('/address-books/{bookID}/{recepient}' , [RecipientController::class, 'delete']);
+        Route::delete('/address-books/{addressBook}/{recepient}' , [RecipientController::class, 'delete']);
 
         
-        Route::post('/telegram/send-message', [TelegramAddressBookController::class, 'sendMessage']);
+        
         Route::post('/messages', [MessageController::class, 'store']);
         
         Route::get('/messages/{id}', [MessageStatusController::class, 'show']);
         
+        Route::post('/telegram/send-message', [TelegramAddressBookController::class, 'sendMessage']);
     });
     
     Route::post('/telegram/webhook', [TelegramWebhookController::class, 'handle']);

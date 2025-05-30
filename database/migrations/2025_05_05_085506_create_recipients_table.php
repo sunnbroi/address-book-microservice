@@ -14,7 +14,7 @@ return new class extends Migration
        Schema::create('recipients', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('chat_id');
-            $table->boolean('is_active')->default(true)->after('chat_id');
+            $table->boolean('is_active')->default(true);
             $table->string('invite_key')->nullable();
             $table->string('username')->nullable();
             $table->string('first_name')->nullable();

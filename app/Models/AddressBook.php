@@ -22,6 +22,7 @@ class AddressBook extends Model
         'id',
         'client_key',
         'name',
+        'invite_key',
     ];
 
     protected static function boot(): void
@@ -39,13 +40,6 @@ class AddressBook extends Model
             if(!$model->isForceDeleting()) {
                return;
             }
-            $recipientIds = $model->recipients()->pluck('recipient_id');
-            $model->recipients()->detach();
-            foreach ($recipientIds as $recipientId) {
-                $recipient = Recipient::find($recipientId);
-                if ($recipient && $recipient->addressBooks()->count() === 0) {
-                    $recipient->delete();
-            }};
     });}
 
     public function recipients(): BelongsToMany
@@ -53,9 +47,14 @@ class AddressBook extends Model
         return $this->belongsToMany(Recipient::class, 'address_books_recipients');
     }
 
-   public function prunable():Builder
+    public function prunable(): Builder
     {
-        return static::query()->where('deleted_at', '<=', now()->subDays(30));
+        return static::onlyTrashed()
+            ->where('deleted_at', '<=', now()->subDays(30));
     }
-
-   }
+    protected function pruning()
+{
+    // detach только перед окончательным удалением
+    $this->recipients()->detach();
+}
+}

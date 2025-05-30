@@ -25,7 +25,7 @@ class UpdateAddressBookRequest extends FormRequest
     {
         return [
             'name' => ['nullable', 'string', 'max:255'],
-            'invite_key'=> ['nullable', 'bool'],
+            'invite_key'=> ['nullable', 'string'],
         ];
     }
 }

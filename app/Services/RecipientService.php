@@ -1,65 +1,110 @@
 <?php
+
 namespace App\Services;
 
-use App\Models\AddressBook;
 use App\Models\Recipient;
+use App\Models\AddressBook;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use App\HTTP\Requests\Recipient\StoreRecipientRequest;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class RecipientService
 {
-    public function createRecipient(StoreRecipientRequest $request, string $addressBookId): ?Recipient
-{
-    $clientKey = $request->header('X-Client-Key');
-    $validated = $request->validated();
-
-    $addressBook = AddressBook::where('id', $addressBookId)
-        ->where('client_key', $clientKey)
-        ->first();
-
-    if (!$addressBook) {
-        return null;
-    }
-
-    $recipient = Recipient::create([
-        'id'         => (string) Str::uuid(),
-        'chat_id'    => $validated['chat_id'],
-        'username'   => $validated['username'] ?? null,
-        'first_name' => $validated['first_name'] ?? null,
-        'last_name'  => $validated['last_name'] ?? null,
-        'type'       => $validated['type'] ?? null,
-    ]);
-
-    $addressBook->recipients()->attach($recipient->id);
-
-    return $recipient;
-}
-
-    public function deleteRecipient(Request $request, string $idAddressBook, string $idRecipient): JsonResponse
+    public function getRecipientsByAddressBook(string $clientKey, string $addressBookId): ?Collection
     {
-        $clientKey = $request->header('X-Client-Key');
-
-        if(!$idAddressBook || !$idRecipient){
-            return response()->json(['message' => 'No IDs provided for deletion'], 400);        
-        }else{
         $addressBook = AddressBook::where('client_key', $clientKey)
-        ->where('id', $idAddressBook)->first();
-        }
+            ->where('id', $addressBookId)
+            ->first();
+
         if (!$addressBook) {
-            return response()->json(['message' => 'Address book not found'], 404);
+            return null;
         }
-        $recipient = Recipient::where('id', $idRecipient)
-        ->whereHas('addressBooks', function ($query) use ($idAddressBook) {
-            $query->where('address_books.id', $idAddressBook);
-        })
-        ->first();
-        if (!$recipient) {
-            return response()->json(['message' => 'Recipient not found'], 404);
-        }
-        $recipient->delete();
-        return response()->json(['message' => 'Recipient detached and deleted'], 200);
+
+        return $addressBook->recipients()->get();
     }
-    
+
+    public function createRecipient(array $data, string $clientKey, string $addressBookId): ?Recipient
+    {
+        $addressBook = AddressBook::where('client_key', $clientKey)
+            ->where('id', $addressBookId)
+            ->first();
+
+        if (!$addressBook) {
+            return null;
+        }
+
+        $recipient = Recipient::create([
+            'id'         => (string) Str::uuid(),
+            'chat_id'    => $data['chat_id'],
+            'username'   => $data['username'] ?? null,
+            'first_name' => $data['first_name'] ?? null,
+            'last_name'  => $data['last_name'] ?? null,
+            'type'       => $data['type'] ?? null,
+        ]);
+
+        $addressBook->recipients()->attach($recipient->id);
+
+        return $recipient;
+    }
+
+    public function deleteRecipient(string $clientKey, string $addressBookId, string $recipientId): bool
+    {
+        $addressBook = AddressBook::where('client_key', $clientKey)
+            ->where('id', $addressBookId)
+            ->first();
+
+        if (!$addressBook) {
+            return false;
+        }
+
+        $recipient = Recipient::where('id', $recipientId)
+            ->whereHas('addressBooks', function ($q) use ($addressBookId) {
+                $q->where('address_books.id', $addressBookId);
+            })
+            ->first();
+
+        if (!$recipient) {
+            return false;
+        }
+
+        $recipient->addressBooks()->detach($addressBookId);
+        $recipient->delete();
+
+        return true;
+    }
+
+    public function bulkStoreRecipients(array $recipientData): void
+    {
+        $prepared = collect($recipientData)->map(function ($item) {
+            return array_merge($item, [
+                'id' => (string) Str::uuid()
+            ]);
+        });
+
+        Recipient::insert($prepared->toArray());
+    }
+
+    public function updateRecipient(Recipient $recipient, array $data): Recipient
+    {
+        $recipient->update($data);
+        return $recipient;
+    }
+
+    public function attachAddressBooks(Recipient $recipient, array $addressBookIds): void
+    {
+        $recipient->addressBooks()->syncWithoutDetaching($addressBookIds);
+
+        if ($recipient->trashed()) {
+            $recipient->restore();
+        }
+    }
+
+    public function detachAddressBooks(Recipient $recipient, array $addressBookIds): void
+    {
+        $recipient->addressBooks()->detach($addressBookIds);
+    }
+
+    public function syncAddressBooks(Recipient $recipient, array $addressBookIds): void
+    {
+        $recipient->addressBooks()->sync($addressBookIds);
+    }
 }

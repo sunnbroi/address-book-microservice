@@ -70,6 +70,8 @@ class Kernel extends HttpKernel
         'verify.hmac' => \App\Http\Middleware\VerifyHmacSignature::class,
     ];
 
+
+
         protected function schedule(Schedule $schedule)
     {
         $schedule->command('model:prune')->daily();

@@ -24,6 +24,7 @@ class StoreAddressBookRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'address_book_id' => ['nullable', 'uuid'],
         ];
     }
 }

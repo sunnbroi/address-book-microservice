@@ -14,57 +14,21 @@ use App\Models\Recipient;
 use App\Models\DeliveryLog;
 use App\Jobs\SendBatchTelegramMessageJob;
 use Illuminate\Support\Facades\Log;
+use App\Http\Requests\Message\MessageRequest;
+use App\Services\MessageDispatchService;
 
 class TelegramAddressBookController extends Controller
 {
-    protected TelegramService $messageService;
-    public function __construct(TelegramService $messageService)
+    protected MessageDispatchService $dispatchService;
+
+    public function __construct(MessageDispatchService $dispatchService)
     {
-        $this->messageService = $messageService;
+        $this->dispatchService = $dispatchService;
     }
-    public function sendMessage(MessageAddressBookRequest $request): void
+
+    public function sendMessage(MessageRequest $request): JsonResponse
 {
-    $validated = $request->validated();
-
-    $message = Message::create([
-        'id'              => Str::uuid(),
-        'address_book_id' => $validated['address_book_id'] ?? null,
-        'recipient_id'    => $validated['recipient_id'] ?? null,
-        'type'            => $validated['type'],
-        'text'            => $validated['text'] ?? null,
-        'link'            => $validated['link'] ?? null,
-        'sent_at'         => now(),
-    ]);
-
-    // Сбор chat_id
-    $chatIds = collect();
-
-    if (!empty($validated['address_book_id'])) {
-        $addressBook = AddressBook::with('recipients')->findOrFail($validated['address_book_id']);
-        $chatIds = $chatIds->merge($addressBook->recipients->pluck('chat_id'));
-    }
-
-    if (!empty($validated['recipient_id'])) {
-        $recipient = Recipient::findOrFail($validated['recipient_id']);
-        $chatIds->push($recipient->chat_id);
-    }
-
-    $chatIds = $chatIds->unique()->filter();
-
-    if ($chatIds->isEmpty()) {
-        Log::warning('Нет получателей для отправки сообщения.', [
-            'message_id' => $message->id,
-            'address_book_id' => $validated['address_book_id'] ?? null,
-            'recipient_id' => $validated['recipient_id'] ?? null,
-        ]);
-        return;
-    }
-
-    $chatIds->chunk(50)->each(function ($chunk, $index) use ($message) {
-        SendBatchTelegramMessageJob::dispatch(
-            $chunk->toArray(),
-            $message->id
-        )->delay(now()->addSeconds($index));
-    });
+    return $this->dispatchService->dispatch($request->validated());
 }
+
 }

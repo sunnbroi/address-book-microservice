@@ -8,7 +8,7 @@ use App\Models\DeliveryLog;
 use App\Services\TelegramService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -29,116 +29,80 @@ class SendBatchTelegramMessageJob implements ShouldQueue
 
     public function handle(TelegramService $telegramService): void
     {
-                Log::info('▶️ Начало обработки батча', [
+        Log::info('▶️ Начата отправка батча', [
             'time' => now()->toDateTimeString(),
-            'chat_ids' => $this->chatIds,
+            'count' => count($this->chatIds),
         ]);
+
         $message = Message::findOrFail($this->messageId);
 
-        $recipients = Recipient::whereIn('chat_id', $this->chatIds)->get()->keyBy('chat_id');
-        $recipientIds = $recipients->pluck('id')->all();
+        $recipients = Recipient::whereIn('chat_id', $this->chatIds)
+            ->get()
+            ->mapWithKeys(fn ($r) => [(string) $r->chat_id => $r]);
 
-        $sentLogs = DeliveryLog::where('message_id', $message->id)
-            ->whereIn('recipient_id', $recipientIds)
-            ->where('status', 'success')
-            ->pluck('recipient_id')
-            ->flip();
+        
+foreach ($this->chatIds as $chatIdRaw) {
+    $chatId = trim((string) $chatIdRaw);
 
-        $logBatch = [];
-        $successfulLogs = [];
-        $now = now();
-
-        foreach ($this->chatIds as $chatId) {
-    $recipient = $recipients[$chatId] ?? null;
-
-    if (!$recipient || isset($sentLogs[$recipient->id])) {
+    if (!is_numeric($chatId)) {
+        Log::error("❌ Некорректный chat_id (не число): $chatId");
         continue;
     }
 
-    try {
-        $chatId = $recipient->chat_id;
+    $chatId = (int) $chatId;
+    $recipient = $recipients->get($chatId);
 
-        $response = match (true) {
-            $message->type === 'message' =>
-                $telegramService->sendMessage($chatId, $message->text),
-            $this->isMediaType($message->type) =>
-                $telegramService->sendMedia($message->type, $chatId, $message->link, $message->text),
-            default => throw new \InvalidArgumentException("Unsupported message type: {$message->type}"),
-        };
+    if (!$recipient) {
+        Log::warning("❌ Получатель не найден для chat_id: $chatId");
+        continue;
+    }
 
-        $success = is_array($response) && ($response['ok'] ?? false);
+    $executed = RateLimiter::attempt(
+        'telegram-rate-limit',
+        $perMinute = 50,
+        function () use ($telegramService, $recipient, $message, $chatId) {
+            try {
+                Log::info("📨 Отправка сообщения", [
+                    'chat_id' => $chatId,
+                    'recipient_id' => $recipient->id,
+                    'message' => $message->only(['id', 'type', 'text']),
+                ]);
 
-        $logBatch[] = $this->createLogEntry(
-            $message,
-            $recipient,
-            $success ? 'success' : ($this->attempts() >= 7 ? 'error' : 'failed'),
-            $success ? null : json_encode($response, JSON_UNESCAPED_UNICODE),
-            $success ? $now->format('Y-m-d H:i:s.u') : null,
-            $now
-        );
+                $response = $telegramService->sendMessage(
+                    (string) $recipient->chat_id,
+                    (string) $message->text
+                );
 
-        if ($success) {
-            $successfulLogs[] = $chatId;
+                Log::info("📬 Ответ Telegram", [
+                    'chat_id' => $chatId,
+                    'response' => $response,
+                ]);
+
+                DeliveryLog::create([
+                    'message_id'      => $message->id,
+                    'recipient_id'    => $recipient->id,
+                    'address_book_id' => $message->address_book_id,
+                    'status'          => 'sent',
+                    'sent_at'         => now(),
+                ]);
+            } catch (\Throwable $e) {
+                Log::error("❌ Ошибка отправки для chat_id: $chatId", [
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
-    } catch (\Throwable $e) {
-        $this->logFailure($message, $recipient, $chatId, $e->getMessage(), $logBatch, $now);
+    );
+
+    if (!$executed) {
+        Log::debug("⏳ Превышен лимит Telegram API, повтор позже");
+        $this->release(1);
+        break;
     }
 }
-        if (!empty($logBatch)) {
-            LogDeliveryResultJob::dispatch($logBatch);
-        }
-
-        if (!empty($successfulLogs)) {
-            Log::info('Успешно отправленные сообщения', ['chat_ids' => $successfulLogs]);
-        }
     }
-
-    private function logFailure(Message $message, ?Recipient $recipient, string $chatId, string $error, array &$logBatch, $now): void
-    {
-        $logBatch[] = $this->createLogEntry(
-            $message,
-            $recipient,
-            $this->attempts() >= 7 ? 'error' : 'failed',
-            $error,
-            null,
-            $now
-        );
-
-        Log::error('Ошибка при отправке сообщения', [
-            'chat_id' => $chatId,
-            'error' => $error,
-        ]);
-    }
-
-    private function createLogEntry(
-        Message $message,
-        Recipient $recipient,
-        string $status,
-        ?string $error = null,
-        ?string $deliveredAt = null,
-        $now = null
-    ): array {
-        return [
-            'message_id'      => $message->id,
-            'recipient_id'    => $recipient->id,
-            'address_book_id' => $message->address_book_id,
-            'status'          => $status,
-            'error'           => $error,
-            'attempts'        => $this->attempts(),
-            'delivered_at'    => $deliveredAt,
-            'created_at'      => $now ?? now(),
-            'updated_at'      => $now ?? now(),
-        ];
-    }
-
-    private function isMediaType(string $type): bool
-    {
-        return in_array($type, ['photo', 'document', 'video', 'audio', 'voice']);
-    }
-
     public function retryUntil(): \DateTimeInterface
     {
-        return now()->addDays(1);
+        return now()->addDay();
     }
 
     public function backoff(): array

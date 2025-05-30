@@ -43,7 +43,9 @@ class Recipient extends Model
             if (!$model->isForceDeleting()) {
                 return;
             }
-            $model->addressBooks()->detach();
+             if ($model->addressBooks()->exists()) {
+                $model->addressBooks()->detach();
+            }
         });
     }
 

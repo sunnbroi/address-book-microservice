@@ -15,15 +15,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        Client::factory(1)->create()->each(function ($client) {
+        Client::factory(2)->create()->each(function ($client) {
             AddressBook::factory()
-                ->count(rand(1, 2))
+                ->count(2)
                 ->create([
                     'client_key' => $client->client_key,
                 ])
                 ->each(function ($addressBook) {
                     $recipients = Recipient::factory()
-                        ->count(rand(55, 60))
+                        ->count(rand(100, 110))
                         ->create();
                     $addressBook->recipients()->attach($recipients->pluck('id'));
                 });
