@@ -1,0 +1,751 @@
+{
+	"info": {
+		"_postman_id": "864a6c55-c4ac-4c34-abd7-e0720a55b47b",
+		"name": "address-book-microservice",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44112873",
+		"_collection_link": "https://alexanderyakovenko.postman.co/workspace/8f9f5b0c-8171-4ea7-8e26-6d557e17246b/collection/44112873-864a6c55-c4ac-4c34-abd7-e0720a55b47b?action=share&source=collection_link&creator=44112873"
+	},
+	"item": [
+		{
+			"name": "Books",
+			"item": [
+				{
+					"name": "Update address book",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const secret = pm.environment.get('Secret-key');\r",
+									"const body = pm.request.body.raw; // это берёт сырое тело, то есть JSON\r",
+									"const signature = CryptoJS.HmacSHA256(body, secret).toString();\r",
+									"pm.environment.set('signature', signature);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Client-Key",
+								"value": "{{Client-Key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Signature",
+								"value": "{{signature}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Approve3\",\r\n    \"invite_key\": \"cknsdkdlcsdssd\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/address-books/01970c02-7564-70d6-b651-9a8677d2d9d3",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"address-books",
+								"01970c02-7564-70d6-b651-9a8677d2d9d3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create address book",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const secret = pm.environment.get('Secret-key');\r",
+									"const body = pm.request.body.raw; // это берёт сырое тело, то есть JSON\r",
+									"const signature = CryptoJS.HmacSHA256(body, secret).toString();\r",
+									"pm.environment.set('signature', signature);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Client-Key",
+								"value": "{{Client-Key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Signature",
+								"value": "{{signature}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"TessеееtAdressBook\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/address-books",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"address-books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Restore address book",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const secret = pm.environment.get('Secret-key');\r",
+									"const body = pm.request.body.raw; // это берёт сырое тело, то есть JSON\r",
+									"const signature = CryptoJS.HmacSHA256(body, secret).toString();\r",
+									"pm.environment.set('signature', signature);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Client-Key",
+								"value": "{{Client-Key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Signature",
+								"value": "{{signature}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"TessеееtAdressBook\",\r\n    \"address_book_id\": \"97b6f36b-e31b-4bf1-a76a-e9d670211ae6\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/address-books",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"address-books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all address book",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const secret = pm.environment.get('Secret-key');\r",
+									"const body = pm.request.body.raw; // это берёт сырое тело, то есть JSON\r",
+									"const signature = CryptoJS.HmacSHA256(body, secret).toString();\r",
+									"pm.environment.set('signature', signature);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Client-Key",
+								"value": "{{Client-Key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Signature",
+								"value": "{{signature}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/address-books",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"address-books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete address book",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const secret = pm.environment.get('Secret-key');\r",
+									"const body = pm.request.body.raw; // это берёт сырое тело, то есть JSON\r",
+									"const signature = CryptoJS.HmacSHA256(body, secret).toString();\r",
+									"pm.environment.set('signature', signature);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Client-Key",
+								"value": "{{Client-Key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Signature",
+								"value": "{{signature}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/address-books/11dbc59a-4e64-49f0-9798-8bdbddbcb140",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"address-books",
+								"11dbc59a-4e64-49f0-9798-8bdbddbcb140"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get address book by id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const secret = pm.environment.get('Secret-key');\r",
+									"const body = pm.request.body.raw;\r",
+									"const signature = CryptoJS.HmacSHA256(body, secret).toString();\r",
+									"pm.environment.set('signature', signature);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Client-Key",
+								"value": "{{Client-Key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Signature",
+								"value": "{{signature}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/address-books/0196f26d-4faa-72ed-b52d-59c992bb36f6",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"address-books",
+								"0196f26d-4faa-72ed-b52d-59c992bb36f6"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Recepients",
+			"item": [
+				{
+					"name": "Get recipient by address book id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const secret = pm.environment.get('Secret-key');\r",
+									"const body = pm.request.body.raw; // это берёт сырое тело, то есть JSON\r",
+									"const signature = CryptoJS.HmacSHA256(body, secret).toString();\r",
+									"pm.environment.set('signature', signature);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Client-Key",
+								"value": "{{Client-Key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Signature",
+								"value": "{{signature}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/recipients/0196f26d-4faa-72ed-b52d-59c992bb36f6",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"recipients",
+								"0196f26d-4faa-72ed-b52d-59c992bb36f6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update recipient",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const secret = pm.environment.get('Secret-key');\r",
+									"const body = pm.request.body.raw; // это берёт сырое тело, то есть JSON\r",
+									"const signature = CryptoJS.HmacSHA256(body, secret).toString();\r",
+									"pm.environment.set('signature', signature);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Client-Key",
+								"value": "{{Client-Key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Signature",
+								"value": "{{signature}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"chat_id\": \"43u5asdf35435\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/recipients/123c8690-0df7-49f7-9f39-c878f0165b10",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"recipients",
+								"123c8690-0df7-49f7-9f39-c878f0165b10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete recipient",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const secret = pm.environment.get('Secret-key');\r",
+									"const body = pm.request.body.raw; // это берёт сырое тело, то есть JSON\r",
+									"const signature = CryptoJS.HmacSHA256(body, secret).toString();\r",
+									"pm.environment.set('signature', signature);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Client-Key",
+								"value": "{{Client-Key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Signature",
+								"value": "{{signature}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/recipients/0196f26d-4faa-72ed-b52d-59c992bb36f6/0410bfc6-e89f-4f5b-826c-422da0148e87",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"recipients",
+								"0196f26d-4faa-72ed-b52d-59c992bb36f6",
+								"0410bfc6-e89f-4f5b-826c-422da0148e87"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create recipient in address book",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const secret = pm.environment.get('Secret-key');\r",
+									"const body = pm.request.body.raw;\r",
+									"const signature = CryptoJS.HmacSHA256(body, secret).toString();\r",
+									"pm.environment.set('signature', signature);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Client-Key",
+								"value": "{{Client-Key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Signature",
+								"value": "{{signature}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"chat_id\": \"34547765\",\r\n    \"username\": \"Zaaaaaaxasc\",\r\n    \"first_name\": \"Mikhail\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/address-books/0196f26d-4fac-73bf-9a90-359d0d8604bb",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"address-books",
+								"0196f26d-4fac-73bf-9a90-359d0d8604bb"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Messages",
+			"item": [
+				{
+					"name": "Send message to one recipient",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const secret = pm.environment.get('Secret-key');\r",
+									"const body = pm.request.body.raw;\r",
+									"const signature = CryptoJS.HmacSHA256(body, secret).toString();\r",
+									"pm.environment.set('signature', signature);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Client-Key",
+								"value": "{{Client-Key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Signature",
+								"value": "{{signature}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"recipient_id\": \"00f79497-35a8-11f0-a426-00d861dac01a\",\r\n    \"type\": \"message\",\r\n    \"text\": \"Тест теста\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/telegram/send-message",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"telegram",
+								"send-message"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send message to adress book",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const secret = pm.environment.get('Secret-key');\r",
+									"const body = pm.request.body.raw;\r",
+									"const signature = CryptoJS.HmacSHA256(body, secret).toString();\r",
+									"pm.environment.set('signature', signature);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Client-Key",
+								"value": "{{Client-Key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-Signature",
+								"value": "{{signature}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"address_book_id\": \"0196f26d-4faa-72ed-b52d-59c992bb36f6\",\r\n    \"type\": \"message\",\r\n    \"text\": \"Попытка записать 8\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/telegram/send-message",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"telegram",
+								"send-message"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

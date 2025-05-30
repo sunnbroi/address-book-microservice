@@ -15,7 +15,7 @@
 /storage/framework/*
 /bootstrap/cache/*
 /bootstrap/
-
+postman/*-local.json
 # Базы данных и резервные копии
 *.sqlite
 *.sql
