@@ -22,8 +22,8 @@ class BulkStoreRecipientRequest extends FormRequest
     public function rules(): array
     {
         return [
-        'recipients' => ['required', 'array', 'min:1'],
-        'recipients.*.telegram_user_id' => ['required', 'string', 'max:255', 'unique:recipients,telegram_user_id'],
+            'recipients' => ['required', 'array', 'min:1'],
+            'recipients.*.telegram_user_id' => ['required', 'string', 'max:255', 'unique:recipients,telegram_user_id'],
         ];
     }
 }

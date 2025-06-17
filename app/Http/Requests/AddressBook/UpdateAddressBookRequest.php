@@ -20,12 +20,12 @@ class UpdateAddressBookRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
 
-     //этот request используется в методах update и store контроллера AddressBookController, при у
+    // этот request используется в методах update и store контроллера AddressBookController, при у
     public function rules(): array
     {
         return [
             'name' => ['nullable', 'string', 'max:255'],
-            'invite_key'=> ['nullable', 'string'],
+            'invite_key' => ['nullable', 'string'],
         ];
     }
 }

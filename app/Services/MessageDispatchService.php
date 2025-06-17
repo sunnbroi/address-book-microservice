@@ -2,15 +2,13 @@
 
 namespace App\Services;
 
-use App\Models\Message;
-use App\Models\AddressBook;
-use App\Models\Recipient;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
-use Illuminate\Http\JsonResponse;
-use App\Jobs\SendBatchTelegramMessageJob;   
 use App\Jobs\SendSingleTelegramMessageJob;
+use App\Models\AddressBook;
+use App\Models\Message;
+use App\Models\Recipient;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class MessageDispatchService
 {
@@ -38,16 +36,16 @@ class MessageDispatchService
         ]);
     }
 
-    private function createMessage(array $validated): Message
+    protected function createMessage(array $validated): Message
     {
         return Message::create([
-            'id'              => (string) Str::uuid(),
+            'id' => (string) Str::uuid(),
             'address_book_id' => $validated['address_book_id'] ?? null,
-            'recipient_id'    => $validated['recipient_id'] ?? null,
-            'type'            => $validated['type'],
-            'text'            => $validated['text'] ?? null,
-            'link'            => $validated['link'] ?? null,
-            'sent_at'         => now(),
+            'recipient_id' => $validated['recipient_id'] ?? null,
+            'type' => $validated['type'],
+            'text' => $validated['text'] ?? null,
+            'link' => $validated['link'] ?? null,
+            'sent_at' => now(),
         ]);
     }
 
@@ -55,12 +53,12 @@ class MessageDispatchService
     {
         $chatIds = collect();
 
-        if (!empty($validated['address_book_id'])) {
+        if (! empty($validated['address_book_id'])) {
             $addressBook = AddressBook::with('recipients')->findOrFail($validated['address_book_id']);
             $chatIds = $chatIds->merge($addressBook->recipients->pluck('chat_id'));
         }
 
-        if (!empty($validated['recipient_id'])) {
+        if (! empty($validated['recipient_id'])) {
             $recipient = Recipient::findOrFail($validated['recipient_id']);
             $chatIds->push($recipient->chat_id);
         }
@@ -68,11 +66,11 @@ class MessageDispatchService
         return $chatIds->filter()->unique()->values();
     }
 
-   private function dispatchJobs(Collection $chatIds, string $messageId): void
-{
-    foreach ($chatIds->values() as $index => $chatId) {
-        $delay = now()->addMilliseconds($index * 20); // 50 сообщений / сек
-        SendSingleTelegramMessageJob::dispatch((string) $chatId, $messageId)->delay($delay); 
+    private function dispatchJobs(Collection $chatIds, string $messageId): void
+    {
+        foreach ($chatIds->values() as $index => $chatId) {
+            $delay = now()->addMilliseconds($index * 20); // 50 сообщений / сек
+            SendSingleTelegramMessageJob::dispatch((string) $chatId, $messageId)->delay($delay);
+        }
     }
-}
 }

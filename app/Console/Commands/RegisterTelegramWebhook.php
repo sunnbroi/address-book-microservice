@@ -14,8 +14,6 @@ class RegisterTelegramWebhook extends Command
      */
     protected $signature = 'telegram:webhook';
 
-
-
     /**
      * The console command description.
      *
@@ -27,22 +25,22 @@ class RegisterTelegramWebhook extends Command
      * Execute the console command.
      */
     public function handle(): int
-{
-    $botToken = config('services.telegram.bot_token');
-    $webhookUrl = config('services.telegram.webhook_url');
+    {
+        $botToken = config('services.telegram.bot_token');
+        $webhookUrl = config('services.telegram.webhook_url');
 
-    $url = "https://api.telegram.org/bot{$botToken}/setWebhook";
+        $url = "https://api.telegram.org/bot{$botToken}/setWebhook";
 
-    $response = Http::post($url, [
-        'url' => "{$webhookUrl}/api/telegram/webhook",
-    ]);
+        $response = Http::post($url, [
+            'url' => "{$webhookUrl}/api/telegram/webhook",
+        ]);
 
-    if ($response->ok()) {
-        $this->info('✅ Webhook успешно установлен: ' . $webhookUrl);
-    } else {
-        $this->error('❌ Ошибка при установке Webhook: ' . $response->body());
+        if ($response->ok()) {
+            $this->info('✅ Webhook успешно установлен: '.$webhookUrl);
+        } else {
+            $this->error('❌ Ошибка при установке Webhook: '.$response->body());
+        }
+
+        return self::SUCCESS;
     }
-
-    return self::SUCCESS;
-}
 }

@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -14,7 +13,7 @@ class RecepientsTableSeeder extends Seeder
     public function run(): void
     {
         DB::table('recipients')->insert([
-            'id'=> 'ASCXSSDVSDFCD',
+            'id' => 'ASCXSSDVSDFCD',
             'chat_id' => 'Rowssdxz',
             'username' => 'tfgegbdxbvf',
             'first_name' => 'wqD',

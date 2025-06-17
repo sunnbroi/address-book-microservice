@@ -19,24 +19,23 @@ class MessageRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    
     public function withValidator($validator): void
-{
-    $validator->after(function ($validator) {
-        if (!$this->filled('address_book_id') && !$this->filled('recipient_id')) {
-            $validator->errors()->add('address_book_id', 'Укажите хотя бы адресную книгу или получателя.');
-        }
-    });
-}
+    {
+        $validator->after(function ($validator) {
+            if (! $this->filled('address_book_id') && ! $this->filled('recipient_id')) {
+                $validator->errors()->add('address_book_id', 'Укажите хотя бы адресную книгу или получателя.');
+            }
+        });
+    }
 
-     public function rules(): array
-{
-    return [
-        'address_book_id' => ['nullable', 'uuid', 'exists:address_books,id', 'max:36'],
-        'recipient_id'    => ['nullable','uuid', 'exists:recipients,id', 'max:36'],
-        'text'            => ['nullable', 'string', 'max:4096'],
-        'link'            => ['required_if:type,photo,document,video,audio,voice', 'string'],
-        'type'            => ['required', 'string', 'in:message,photo,document,video,audio,voice'],
-    ];
-}
+    public function rules(): array
+    {
+        return [
+            'address_book_id' => ['nullable', 'uuid', 'exists:address_books,id', 'max:36'],
+            'recipient_id' => ['nullable', 'uuid', 'exists:recipients,id', 'max:36'],
+            'text' => ['nullable', 'string', 'max:4096'],
+            'link' => ['required_if:type,photo,document,video,audio,voice', 'string'],
+            'type' => ['required', 'string', 'in:message,photo,document,video,audio,voice'],
+        ];
+    }
 }

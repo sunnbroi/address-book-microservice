@@ -14,8 +14,10 @@ use Illuminate\Support\Str;
 class AddressBook extends Model
 {
     // use SoftDeletes
-    use HasUuids, SoftDeletes, Prunable, HasFactory;
+    use HasFactory, HasUuids, Prunable, SoftDeletes;
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -23,6 +25,7 @@ class AddressBook extends Model
         'client_key',
         'name',
         'invite_key',
+        'chat_id',
     ];
 
     protected static function boot(): void
@@ -30,17 +33,18 @@ class AddressBook extends Model
         parent::boot();
 
         static::creating(function (AddressBook $model) {
-            if (!$model->id) {
+            if (! $model->id) {
                 $model->id = (string) Str::uuid();
-            }    
+            }
             $model->invite_key = (string) Str::uuid();
         });
 
         static::deleting(function ($model) {
-            if(!$model->isForceDeleting()) {
-               return;
+            if (! $model->isForceDeleting()) {
+                return;
             }
-    });}
+        });
+    }
 
     public function recipients(): BelongsToMany
     {
@@ -52,9 +56,10 @@ class AddressBook extends Model
         return static::onlyTrashed()
             ->where('deleted_at', '<=', now()->subDays(30));
     }
+
     protected function pruning()
-{
-    // detach только перед окончательным удалением
-    $this->recipients()->detach();
-}
+    {
+        // detach только перед окончательным удалением
+        $this->recipients()->detach();
+    }
 }

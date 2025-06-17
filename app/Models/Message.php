@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Message extends Model
 {
     use HasFactory;
 
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -26,17 +27,19 @@ class Message extends Model
     {
         return $this->belongsTo(AddressBook::class);
     }
-     public function recipient()
+
+    public function recipient()
     {
         return $this->belongsTo(Recipient::class);
     }
+
     public function deliveryLogs()
     {
         return $this->hasMany(DeliveryLog::class);
     }
+
     public function prunable()
     {
-         return static::where('sent_at', '<', now()->subMonths(6));
+        return static::where('sent_at', '<', now()->subMonths(6));
     }
-
 }

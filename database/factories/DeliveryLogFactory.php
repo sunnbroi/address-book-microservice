@@ -1,10 +1,9 @@
 <?php
 
 namespace Database\Factories;
-use App\Models\AddressBook;
-use App\Models\Message;
-use App\Models\Recipient;
 
+use App\Models\AddressBook;
+use App\Models\Recipient;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

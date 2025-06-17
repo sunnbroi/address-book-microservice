@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Carbon;
-use Illuminate\Http\JsonResponse;
-use App\Models\Recipient;
 use App\Models\AddressBook;
+use App\Models\Recipient;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class TelegramWebhookController extends Controller
 {
@@ -15,15 +13,15 @@ class TelegramWebhookController extends Controller
     {
         $data = $request->all();
 
-        if (!empty($data['message']['text']) && $data['message']['text'] === '/start') {
+        if (! empty($data['message']['text']) && $data['message']['text'] === '/start') {
             $this->handleStartCommand($data['message']);
         }
 
-        if (!empty($data['message']['migrate_to_chat_id'])) {
+        if (! empty($data['message']['migrate_to_chat_id'])) {
             $this->handleGroupMigration($data['message']);
         }
 
-        if (!empty($data['my_chat_member'])) {
+        if (! empty($data['my_chat_member'])) {
             $this->handleChatMemberUpdate($data['my_chat_member']);
         }
 
@@ -34,7 +32,7 @@ class TelegramWebhookController extends Controller
     {
         $chat = $message['chat'];
 
-        $recipient = Recipient::updateOrCreate(
+        Recipient::updateOrCreate(
             ['chat_id' => (string) $chat['id']],
             [
                 'first_name' => $chat['first_name'] ?? null,
@@ -50,19 +48,14 @@ class TelegramWebhookController extends Controller
         $oldId = (string) $message['chat']['id'];
         $newId = (string) $message['migrate_to_chat_id'];
 
-        $updated = AddressBook::where('chat_id', $oldId)->update(['chat_id' => $newId]);
-
-        if ($updated) {
-
-        } else {
-        }
+        AddressBook::where('chat_id', $oldId)->update(['chat_id' => $newId]);
     }
 
     protected function handleChatMemberUpdate(array $memberUpdate): void
     {
-        $chat     = $memberUpdate['chat'];
-        $status   = $memberUpdate['new_chat_member']['status'];
-        $chatId   = (string) $chat['id'];
+        $chat = $memberUpdate['chat'];
+        $status = $memberUpdate['new_chat_member']['status'];
+        $chatId = (string) $chat['id'];
         $chatType = $chat['type'] ?? null;
         $chatTitle = $chat['title'] ?? null;
         $timestamp = $memberUpdate['date'] ?? null;
@@ -80,11 +73,10 @@ class TelegramWebhookController extends Controller
     {
         $recipient = Recipient::where('chat_id', $chatId)->first();
 
-        if (!$recipient || !$timestamp) {
+        if (! $recipient || ! $timestamp) {
             return;
         }
 
-        $eventTime = Carbon::createFromTimestamp($timestamp);
         $updatedAt = $recipient->updated_at;
 
         if ($updatedAt && $updatedAt->timestamp >= $timestamp) {
@@ -92,17 +84,15 @@ class TelegramWebhookController extends Controller
         }
 
         if (in_array($status, ['kicked', 'left'])) {
-            $recipient->update([
-                'is_active' => false,
-                'blocked_at' => now(),
-            ]);
+            $recipient->is_active = false;
+            $recipient->blocked_at = now();
+            $recipient->save();
         }
 
         if ($status === 'member') {
-            $recipient->update([
-                'is_active' => true,
-                'blocked_at' => null,
-            ]);
+            $recipient->is_active = true;
+            $recipient->blocked_at = null;
+            $recipient->save();
         }
     }
 
@@ -111,7 +101,7 @@ class TelegramWebhookController extends Controller
         $clientKey = config('services.telegram.default_client_key');
 
         AddressBook::updateOrCreate(
-            ['chat_id' => $chatId, 'type' => 'telegram'],
+            ['chat_id' => $chatId],
             [
                 'name' => $title ?? 'Без названия',
                 'client_key' => $clientKey,

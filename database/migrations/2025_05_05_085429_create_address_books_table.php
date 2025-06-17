@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('invite_key');
             $table->uuid('client_key');
-            $table->string('chat_id')->nullable();   // chat_id только если telegram
+            $table->string('chat_id')->unique()->nullable();   // chat_id только если telegram
             $table->foreign('client_key')->references('client_key')->on('clients')->onDelete('cascade');
             $table->string('name');
             $table->timestamps();
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-       Schema::dropIfExists('address_books');
+        Schema::dropIfExists('address_books');
     }
 };

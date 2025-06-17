@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Models\AddressBook;
 use App\Models\Recipient;
-use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class AddressBookService
 {
@@ -37,6 +37,7 @@ class AddressBookService
         }
 
         $addressBook->update($data);
+
         return $addressBook;
     }
 
@@ -70,21 +71,20 @@ class AddressBookService
         $addressBook->recipients()->sync($recipientIds);
     }
 
-        public function restoreAddressBookIfExists(string $id, string $clientKey, string $name): ?AddressBook
+    public function restoreAddressBookIfExists(string $id, string $clientKey, string $name): ?AddressBook
     {
         $book = AddressBook::onlyTrashed()
             ->where('id', $id)
             ->where('client_key', $clientKey)
             ->first();
-    
-        if (!$book) {
+
+        if (! $book) {
             return null;
         }
-    
+
         $book->restore();
         $book->update(['name' => $name]);
-    
+
         return $book;
     }
-
 }

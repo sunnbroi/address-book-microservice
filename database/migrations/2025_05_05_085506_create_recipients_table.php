@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('recipients', function (Blueprint $table) {
+        Schema::create('recipients', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('chat_id');
             $table->boolean('is_active')->default(true);
@@ -24,13 +24,14 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-    });
+        });
     }
+
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-       Schema::dropIfExists('recipients');
+        Schema::dropIfExists('recipients');
     }
 };

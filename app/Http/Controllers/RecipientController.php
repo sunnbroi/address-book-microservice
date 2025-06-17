@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Recipient\ADSRecipientRequest;
+use App\Http\Requests\Recipient\BulkStoreRecipientRequest;
 use App\Http\Requests\Recipient\DestroyRecipientRequest;
 use App\Http\Requests\Recipient\StoreRecipientRequest;
 use App\Http\Requests\Recipient\UpdateRecipientRequest;
-use App\Http\Requests\Recipient\ADSRecipientRequest;
-use App\Http\Requests\Recipient\BulkStoreRecipientRequest;
 use App\Models\Recipient;
+use App\Services\RecipientService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Services\RecipientService;
 
 class RecipientController extends Controller
 {
@@ -24,6 +24,7 @@ class RecipientController extends Controller
         if (is_null($recipients)) {
             return response()->json(['message' => 'Address book not found'], 404);
         }
+
         return response()->json(['recipients' => $recipients]);
     }
 
@@ -34,7 +35,7 @@ class RecipientController extends Controller
 
         $recipient = $this->recipientService->createRecipient($data, $clientKey, $id);
 
-        if (!$recipient) {
+        if (! $recipient) {
             return response()->json(['message' => 'Address book not found or recipient not created'], 404);
         }
 
@@ -60,7 +61,7 @@ class RecipientController extends Controller
 
         $success = $this->recipientService->deleteRecipient($clientKey, $addressBookId, $recipientId);
 
-        if (!$success) {
+        if (! $success) {
             return response()->json(['message' => 'Not found or access denied'], 404);
         }
 

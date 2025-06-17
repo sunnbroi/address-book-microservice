@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\Recipient;
 use App\Models\AddressBook;
+use App\Models\Recipient;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -15,7 +15,7 @@ class RecipientService
             ->where('id', $addressBookId)
             ->first();
 
-        if (!$addressBook) {
+        if (! $addressBook) {
             return null;
         }
 
@@ -28,17 +28,17 @@ class RecipientService
             ->where('id', $addressBookId)
             ->first();
 
-        if (!$addressBook) {
+        if (! $addressBook) {
             return null;
         }
 
         $recipient = Recipient::create([
-            'id'         => (string) Str::uuid(),
-            'chat_id'    => $data['chat_id'],
-            'username'   => $data['username'] ?? null,
+            'id' => (string) Str::uuid(),
+            'chat_id' => $data['chat_id'],
+            'username' => $data['username'] ?? null,
             'first_name' => $data['first_name'] ?? null,
-            'last_name'  => $data['last_name'] ?? null,
-            'type'       => $data['type'] ?? null,
+            'last_name' => $data['last_name'] ?? null,
+            'type' => $data['type'] ?? null,
         ]);
 
         $addressBook->recipients()->attach($recipient->id);
@@ -52,7 +52,7 @@ class RecipientService
             ->where('id', $addressBookId)
             ->first();
 
-        if (!$addressBook) {
+        if (! $addressBook) {
             return false;
         }
 
@@ -62,7 +62,7 @@ class RecipientService
             })
             ->first();
 
-        if (!$recipient) {
+        if (! $recipient) {
             return false;
         }
 
@@ -76,7 +76,7 @@ class RecipientService
     {
         $prepared = collect($recipientData)->map(function ($item) {
             return array_merge($item, [
-                'id' => (string) Str::uuid()
+                'id' => (string) Str::uuid(),
             ]);
         });
 
@@ -86,6 +86,7 @@ class RecipientService
     public function updateRecipient(Recipient $recipient, array $data): Recipient
     {
         $recipient->update($data);
+
         return $recipient;
     }
 

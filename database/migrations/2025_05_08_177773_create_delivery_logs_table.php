@@ -24,8 +24,8 @@ return new class extends Migration
             $table->timestamps();
             $table->index('message_id');
             $table->index('address_book_id');
-            $table->index('recipient_id');      
-    }); 
+            $table->index('recipient_id');
+        });
     }
 
     /**

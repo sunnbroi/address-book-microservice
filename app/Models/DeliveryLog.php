@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Prunable;
 
 class DeliveryLog extends Model
@@ -18,12 +18,12 @@ class DeliveryLog extends Model
         'error',
         'status',
         'attempts',
-        'delivered_at',   
+        'delivered_at',
     ];
 
     protected $casts = [
-    'delivered_at' => 'datetime',
-];
+        'delivered_at' => 'datetime',
+    ];
 
     public function message()
     {
@@ -34,6 +34,7 @@ class DeliveryLog extends Model
     {
         return $this->belongsTo(Recipient::class);
     }
+
     public function addressBook()
     {
         return $this->belongsTo(AddressBook::class);
@@ -43,11 +44,11 @@ class DeliveryLog extends Model
     {
         return static::where(function ($query) {
             $query->where('status', 'success')
-                  ->where('sent_at', '<', now()->subDays(7))
-                  ->orWhere(function ($q) {
-                      $q->where('status', 'failed')
+                ->where('sent_at', '<', now()->subDays(7))
+                ->orWhere(function ($q) {
+                    $q->where('status', 'failed')
                         ->where('sent_at', '<', now()->subDays(30));
-                    });
+                });
         });
     }
 }

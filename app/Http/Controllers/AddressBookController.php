@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AddressBook\ADSAddressBookRequest;
+use App\Http\Requests\AddressBook\BulkStoreAddressBookRequest;
 use App\Http\Requests\AddressBook\StoreAddressBookRequest;
 use App\Http\Requests\AddressBook\UpdateAddressBookRequest;
-use App\Http\Requests\AddressBook\BulkStoreAddressBookRequest;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Models\AddressBook;
 use App\Services\AddressBookService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class AddressBookController extends Controller
 {
@@ -18,7 +18,7 @@ class AddressBookController extends Controller
     public function index(Request $request): JsonResponse
     {
         $clientKey = $request->header('X-Client-Key');
-        if (!$clientKey) {
+        if (! $clientKey) {
             return response()->json(['message' => 'Client key is required'], 400);
         }
 
@@ -31,28 +31,27 @@ class AddressBookController extends Controller
     {
         $clientKey = $request->header('X-Client-Key');
         $validated = $request->validated();
-    
+
         // Попытка восстановить, если пришел address_book_id
-        if (!empty($validated['address_book_id'])) {
+        if (! empty($validated['address_book_id'])) {
             $restored = $this->addressBookService
                 ->restoreAddressBookIfExists($validated['address_book_id'], $clientKey, $validated['name']);
-        
+
             if ($restored) {
                 return response()->json([
                     'message' => 'Address book restored',
                     'address_book' => $restored,
                 ]);
             }
-        
+
             return response()->json(['message' => 'Failed to restore address book'], 404);
         }
-    
+
         // Создание новой
         $book = $this->addressBookService->createAddressBook($validated, $clientKey);
-    
+
         return response()->json($book, 201);
     }
-
 
     public function show(Request $request, string $id): JsonResponse
     {
@@ -60,7 +59,7 @@ class AddressBookController extends Controller
 
         $book = $this->addressBookService->findAddressBook($id, $clientKey);
 
-        if (!$book) {
+        if (! $book) {
             return response()->json(['message' => 'Address book not found'], 404);
         }
 
@@ -74,7 +73,7 @@ class AddressBookController extends Controller
 
         $book = $this->addressBookService->findAddressBook($id, $clientKey);
 
-        if (!$book) {
+        if (! $book) {
             return response()->json(['message' => 'Address book not found'], 404);
         }
 
@@ -86,13 +85,13 @@ class AddressBookController extends Controller
     public function destroy(Request $request, string $id): JsonResponse
     {
         $clientKey = $request->header('X-Client-Key');
-        if (!$id) {
+        if (! $id) {
             return response()->json(['message' => 'No ID provided'], 400);
         }
 
         $book = $this->addressBookService->findAddressBook($id, $clientKey);
 
-        if (!$book) {
+        if (! $book) {
             return response()->json(['message' => 'Address book not found'], 404);
         }
 

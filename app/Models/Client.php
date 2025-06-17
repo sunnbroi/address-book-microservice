@@ -2,17 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class Client extends Model
 {
-    use HasUuids, HasFactory;
+    use HasFactory, HasUuids;
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $primaryKey = 'client_key';
 
     protected $fillable = [
@@ -21,12 +24,13 @@ class Client extends Model
         'name',
         'secret_key',
     ];
+
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($model) {
-            if (!$model->client_key) {
+            if (! $model->client_key) {
                 $model->client_key = Str::uuid();
             }
         });

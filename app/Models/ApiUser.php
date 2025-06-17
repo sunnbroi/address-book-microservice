@@ -2,21 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Model;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
 class ApiUser extends Authenticatable
 {
     use HasApiTokens;
+
     protected $fillable = [
-        'id',];
+        'id', ];
 
     public function client(): HasOne
-{
-    return $this->hasOne(Client::class);
+    {
+        return $this->hasOne(Client::class);
+    }
 }
-
-}
-

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('address_book_id')->nullable()->references('id')->on('address_books')->onDelete('cascade');
             $table->foreignUuid('recipient_id')->nullable()->references('id')->on('recipients')->onDelete('cascade');
-           $table->enum('type', ['message', 'photo', 'document', 'video', 'audio', 'voice'])->default('message');
+            $table->enum('type', ['message', 'photo', 'document', 'video', 'audio', 'voice'])->default('message');
             $table->text('text');
             $table->string('link')->nullable();
             $table->timestamp('updated_at')->nullable();

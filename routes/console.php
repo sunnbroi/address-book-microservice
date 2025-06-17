@@ -8,7 +8,6 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-
 RateLimiter::for('telegram:rate-limit', function () {
     return \Illuminate\Cache\RateLimiting\Limit::perSecond(50);
 });

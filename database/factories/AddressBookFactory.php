@@ -1,8 +1,9 @@
 <?php
 
 namespace Database\Factories;
-use Illuminate\Database\Eloquent\Factories\Factory;
+
 use App\Models\Client;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AddressBook>
@@ -17,10 +18,9 @@ class AddressBookFactory extends Factory
     public function definition(): array
     {
         return [
-            'invite_key' => $this->faker->regexify('[A-Z0-9]{10}') ,
-            'client_key'=>Client::factory()->create()->client_key,
+            'invite_key' => $this->faker->regexify('[A-Z0-9]{10}'),
+            'client_key' => Client::factory()->create()->client_key,
             'name' => $this->faker->company(),
-            'type' => 'manual',
         ];
     }
 }

@@ -3,10 +3,10 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Throwable;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Http\JsonResponse;
+use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -21,13 +21,13 @@ class Handler extends ExceptionHandler
     ];
 
     public function invalidJson($request, ValidationException $exception): JsonResponse
-{
-    \Log::error('🛑 Ошибка валидации', [
-        'errors' => $exception->errors(),
-    ]);
+    {
+        \Log::error('🛑 Ошибка валидации', [
+            'errors' => $exception->errors(),
+        ]);
 
-    return parent::invalidJson($request, $exception);
-}
+        return parent::invalidJson($request, $exception);
+    }
 
     public function register(): void
     {

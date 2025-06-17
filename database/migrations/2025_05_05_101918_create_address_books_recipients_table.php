@@ -21,7 +21,7 @@ return new class extends Migration
                 ->references('id')
                 ->on('address_books')
                 ->onDelete('cascade');
-            
+
             $table->foreign('recipient_id')
                 ->references('id')
                 ->on('recipients')
@@ -34,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-    Schema::dropIfExists('address_books_recipients');
+        Schema::dropIfExists('address_books_recipients');
     }
 };
